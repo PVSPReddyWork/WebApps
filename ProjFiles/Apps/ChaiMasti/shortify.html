@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Joystick Controls</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <style>
+        html,
+        body {
+            background-color: #90E4C1;
+            align-items: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        .rotate * {
+            transform: rotate(90deg);
+            transform-origin: center;
+            /* width: 100vh; */
+            /* height: 100vw; */
+            /* position: absolute; */
+            /* top: 50%;
+            left: 50%; */
+            /* transform: rotate(90deg) translate(-50%, -50%); */
+        }
+
+        #mainHolderDiv {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .joystick {
+            position: relative;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            touch-action: none;
+            width: 75vmin;
+            height: 75vmin;
+        }
+
+        .inner-circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #555;
+            border-radius: 50%;
+        }
+
+        .output {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body onload="onLoadBody();">
+    <div id="mainHolderDiv">
+        <div class="joystick" id="joystick">
+            <div class="inner-circle" id="inner-circle"></div>
+        </div>
+        <div class="output" id="output">X: 0, Y: 0</div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+        const joystick = document.getElementById('joystick');
+        const innerCircle = document.getElementById('inner-circle');
+        let outerRadius, innerRadius, startX, startY;
+
+        function recalculateDimensions() {
+            outerRadius = joystick.clientWidth / 2;
+            innerRadius = innerCircle.clientWidth / 2;
+        }
+
+        function updateJoystick(x, y) {
+            const dx = x - startX;
+            const dy = y - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = outerRadius - innerRadius;
+            const angle = Math.atan2(dy, dx);
+            const boundedDistance = Math.min(distance, maxDistance);
+
+            const posX = Math.cos(angle) * boundedDistance;
+            const posY = Math.sin(angle) * boundedDistance;
+
+            // Update position of the inner circle
+            innerCircle.style.transform = `translate(${posX}px, ${posY}px)`;
+
+            const normalizedX = Math.round((posX / maxDistance) * 1023);
+            const normalizedY = Math.round((posY / maxDistance) * 1023);
+
+            // Display values
+            output.textContent = `X: ${normalizedX}, Y: ${normalizedY}`;
+        }
+
+        function resetJoystick() {
+            innerCircle.style.transform = 'translate(0px, 0px)';
+            output.textContent = 'X: 0, Y: 0';
+        }
+
+        joystick.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? e.clientX : e.clientY;
+            startY = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? e.clientY : e.clientY;
+
+            function onMouseMove(event) {
+                let x = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? event.clientX : event.clientY;
+                let y = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? event.clientY : event.clientX;
+                updateJoystick(x, y);
+            }
+
+            function onMouseUp() {
+                resetJoystick();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+
+        joystick.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startX = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? e.touches[0].clientX : e.touches[0].clientY;
+            startY = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? e.touches[0].clientY : e.touches[0].clientY;
+            // startX = e.touches[0].clientX;
+            // startY = e.touches[0].clientY;
+
+            function onTouchMove(event) {
+                let x = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? event.touches[0].clientX : event.touches[0].clientY;
+                let y = _orientation.toLowerCase().includes("portrait".toLowerCase()) ? event.touches[0].clientY : event.touches[0].clientX;
+                updateJoystick(x, y);
+                // updateJoystick(event.touches[0].clientX, event.touches[0].clientY);
+            }
+
+            function onTouchEnd() {
+                resetJoystick();
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+            }
+
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
+
+        var _orientation="portrait";
+        function handleOrientationChange(e) {
+            
+
+            switch (window.orientation) {
+                case 0:
+                _orientation = "portrait";
+                    break;
+                case 90:
+                _orientation = "landscape (clockwise)";
+                    break;
+                case -90:
+                _orientation = "landscape (counterclockwise)";
+                    break;
+                case 180:
+                _orientation = "portrait (upside-down)";
+                    break;
+                default:
+                _orientation = "unknown";
+            }
+
+            console.log(`Orientation changed: ${_orientation}`);
+            // Add any logic based on orientation here, e.g., applying rotation
+            if (_orientation === "portrait" || _orientation === "portrait (upside-down)") {
+                document.body.classList.add('rotate');
+            } else {
+                document.body.classList.remove('rotate');
+            }
+            recalculateDimensions();
+        }
+
+        window.addEventListener("resize", handleOrientationChange);
+        window.addEventListener("orientationchange", handleOrientationChange);
+        window.addEventListener("load", () => {
+            recalculateDimensions();
+            handleOrientationChange();
+        });
+
+        function onLoadBody() {
+            recalculateDimensions();
+            handleOrientationChange();
+        }
+    </script>
+</body>
+
+</html>

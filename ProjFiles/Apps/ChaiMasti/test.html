@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style rel="stylesheet" type="text/css" media="screen">
+        html,
+        body {
+            background-color: #90E4C1;
+            align-items: center;
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .bodyHolderDiv {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #mainHolderDiv {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            width: fit-content;
+        }
+
+        @media (min-width: 600px) {
+            #mainHolderDiv {
+                flex-direction: row;
+                gap: 20px;
+            }
+        }
+
+        .joystick {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            touch-action: none;
+        }
+
+        .inner-circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #555;
+            border-radius: 50%;
+        }
+
+        .output {
+            font-size: 1.2em;
+            color: #333;
+        }
+
+        #loaderDiv {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0006;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            border: 3px solid;
+            border-color: #FFF #FFF transparent transparent;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loader::after,
+        .loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid;
+            border-color: transparent transparent #FF3D00 #FF3D00;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotationBack 0.5s linear infinite;
+            transform-origin: center center;
+        }
+
+        .loader::before {
+            width: 32px;
+            height: 32px;
+            border-color: #FFF #FFF transparent transparent;
+            animation: rotation 1.5s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotationBack {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+    </style>
+</head>
+
+<body onload="onLoadBody();">
+    <div class="bodyHolderDiv">
+        <div id="mainHolderDiv">
+            <div class="joystick" id="joystick">
+                <div class="inner-circle" id="inner-circle"></div>
+            </div>
+            <div class="output" id="output">X: 0, Y: 0</div>
+        </div>
+
+        <div id="loaderDiv">
+            <span class="loader"></span>
+        </div>
+    </div>
+
+    
+    <script type="application/javascript">
+        function showLoader(shallShow) {
+            var LoaderDiv = document.getElementById('loaderDiv');
+            if (LoaderDiv !== null && LoaderDiv !== undefined) {
+                if (shallShow) {
+                    LoaderDiv.style.visibility = "visible";
+                }
+                else {
+                    LoaderDiv.style.visibility = "hidden";
+                }
+            }
+        }
+        function showHideStatus(shallShow, displayText = "") {
+            var loginStatus = document.getElementById("loginStatus");
+            if (loginStatus !== null && loginStatus !== undefined) {
+                if (shallShow !== null && shallShow !== undefined) {
+                    if (shallShow === true) {
+                        if (displayText !== null && displayText !== undefined && displayText !== "") {
+                            loginStatus.innerHTML = displayText;
+                        }
+                        loginStatus.style.visibility = "visible";
+                    }
+                    else {
+                        loginStatus.style.visibility = "hidden";
+                    }
+                }
+            }
+        }
+        function CheckisConnectedToNetwork() {
+            showLoader(true);
+            try {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.onreadystatechange = function () {
+                    try {
+                        console.log(`\nready State: \t${xobj.readyState}, \t\t\tstatus: \t${xobj.status}\n`);
+                        if (xobj.readyState == 4 && xobj.status == 200) {
+                            var data = xobj.response;
+                            var data_JSON = JSON.parse(data);
+                            console.log(data_JSON);
+                            if (data_JSON !== null && data_JSON !== undefined) {
+                                if (data_JSON.statusCode !== 200 && data_JSON.isSuccessful !== true) {
+                                    showLoader(false);
+                                    showHideStatus(true);
+                                }
+                                else {
+                                    showLoader(false);
+                                    showHideStatus(false);
+                                    window.location.href = './SSIDConnection';
+                                }
+                            }
+                            else {
+                                showLoader(false);
+                            }
+                        }
+                        else {
+                            showHideStatus(true);
+                            showLoader(false);
+                        }
+                    }
+                    catch (ex) {
+                        showLoader(false);
+                    }
+                };
+                xobj.open('GET', './isConnectedToNetwork', true); // Replace 'my_data' with the path to your file
+                xobj.send();
+            }
+            catch (ex) {
+                showLoader(false);
+            }
+        }
+
+        function sendDirections(xVal, yVal) {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType('application/json');
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == 200) {
+                    var data = xobj.response;
+                    var data_JSON = JSON.parse(data);
+                    console.log(data_JSON);
+                    if (data_JSON !== null && data_JSON !== undefined) {
+                        if (
+                            data_JSON.statusCode !== 200 &&
+                            data_JSON.isSuccessful !== true
+                        ) {
+                            //showHideStatus(true);
+                        } else {
+                            //{"statusCode": "200","isSuccessful": true,"data":{"ssidList":[{"ssid": "LIC","password":"","isEncrypted": false,"signalStrength": 135,"ssidChannel":"5"}]},"message": "This data is a valid one"}
+                            //ssidList = data_JSON.data.ssidList;
+                            //updateSSIDs(data_JSON.data.ssidList);
+                            //showHideStatus(false);
+                            //window.location.href = './SSIDConnection.html';
+                        }
+                    }
+                } else {
+                    //showHideStatus(true);
+                }
+            };
+            let forwardSpeed = 0;
+            let backwardSpeed = 0;
+            let rightSpeed = 0;
+            let leftSpeed = 0;
+            if (xVal <= 0) {
+                leftSpeed = (-1) * xVal;
+            }
+            else {
+                rightSpeed = xVal;
+            }
+            if (yVal <= 0) {
+                forwardSpeed = (-1) * yVal;
+            }
+            else {
+                backwardSpeed = yVal;
+            }
+            let urlString = '/AccessJoystick' + '?forwardSpeed=' + forwardSpeed + '&backwardSpeed=' + backwardSpeed + '&rightSpeed=' + rightSpeed + '&leftSpeed=' + leftSpeed;
+            console.log(urlString);
+            xobj.open('POST', urlString, true); // Replace 'my_data' with the path to your file
+            xobj.send();
+        }
+
+        const joystick = document.getElementById('joystick');
+        const innerCircle = document.getElementById('inner-circle');
+        const output = document.getElementById('output');
+        const outerRadius = joystick.clientWidth / 2;
+        const innerRadius = innerCircle.clientWidth / 2;
+        let startX, startY;
+        function updateJoystick(x, y) {
+            const dx = x - startX;
+            const dy = y - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = outerRadius - innerRadius;
+
+            const angle = Math.atan2(dy, dx);
+            const boundedDistance = Math.min(distance, maxDistance);
+
+            const posX = Math.cos(angle) * boundedDistance;
+            const posY = Math.sin(angle) * boundedDistance;
+
+            innerCircle.style.transform = `translate(${posX}px, ${posY}px)`;
+
+            const normalizedX = Math.round((posX / maxDistance) * 1023);
+            const normalizedY = Math.round((posY / maxDistance) * 1023);
+
+            sendDirections(normalizedX, normalizedY);
+
+            output.textContent = `X: ${normalizedX}, Y: ${normalizedY}`;
+        }
+        function resetJoystick() {
+            innerCircle.style.transform = 'translate(0px, 0px)';
+            output.textContent = 'X: 0, Y: 0';
+            sendDirections(0, 0); // Send 0,0 to register center position
+        }
+        joystick.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX;
+            startY = e.clientY;
+            function onMouseMove(event) {
+                updateJoystick(event.clientX, event.clientY);
+            }
+            function onMouseUp() {
+                resetJoystick();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        joystick.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            function onTouchMove(event) {
+                updateJoystick(event.touches[0].clientX, event.touches[0].clientY);
+            }
+            function onTouchEnd() {
+                resetJoystick();
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+            }
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
+
+        function onLoadBody() {
+            CheckisConnectedToNetwork();
+        }
+    </script>
+</body>
+
+</html>

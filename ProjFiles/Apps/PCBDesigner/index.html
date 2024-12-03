@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PCB Designer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <div id="app">
+        <!-- Sidebar -->
+        <div id="sidebar" class="hidden">
+            <h2>PCB Tools</h2>
+            <div class="section">
+            <div class="section">
+                <button id="save-design">Save</button>
+                <button id="clear-design">Clear</button>
+                <button id="export-design">Export</button>
+                <input type="file" id="import-design" style="display:none;">
+                <label for="import-design" id="import-button">Import</label>
+            </div>
+                <h3>Add Holes</h3>
+                <label for="holes-x">Holes X:</label>
+                <input type="number" id="holes-x" min="1" value="20">
+                <label for="holes-y">Holes Y:</label>
+                <input type="number" id="holes-y" min="1" value="20">
+                <button id="add-holes">Add Holes</button>
+            </div>
+            <div class="section">
+                <label for="line-color">Line Color:</label>
+                <input type="color" id="line-color" value="#000000">
+                <button id="toggle-draw-line">Draw Line</button>
+            </div>
+        </div>
+
+        <!-- Drawing Area -->
+        <!-- <div id="drawing-area"></div> -->
+        <svg id="drawing-area" xmlns="http://www.w3.org/2000/svg"></svg>
+
+        <!-- Floating Menu -->
+        <button id="toggle-sidebar" class="floating-button">☰</button>
+    </div>
+
+    <!-- <script src="./Scripts/Sidebar.js"></script> -->
+    <script src="script.js"></script>
+</body>
+
+</html>

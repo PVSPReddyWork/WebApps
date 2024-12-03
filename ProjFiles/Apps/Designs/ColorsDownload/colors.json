@@ -1,0 +1,120 @@
+{
+    "colors": [
+        {
+            "name": "Atest",
+            "hex": "#EAE0D5"
+        },
+        {
+            "name": "beige",
+            "hex": "#F5F5DC"
+        },
+        {
+            "name": "black",
+            "hex": "#000000"
+        },
+        {
+            "name": "blue_deep_navy",
+            "hex": "#000080"
+        },
+        {
+            "name": "blue_sky",
+            "hex": "#87CEEB"
+        },
+        {
+            "name": "bronze",
+            "hex": "#CD7F32"
+        },
+        {
+            "name": "burgundy_deep",
+            "hex": "#800020"
+        },
+        {
+            "name": "cream",
+            "hex": "#FFFDD0"
+        },
+        {
+            "name": "gold_metallic",
+            "hex": "#D4AF37"
+        },
+        {
+            "name": "gray_charcoal_1",
+            "hex": "#36454F"
+        },
+        {
+            "name": "gray_charcoal_2",
+            "hex": "#333333"
+        },
+        {
+            "name": "gray_stone",
+            "hex": "#8B8C7A"
+        },
+        {
+            "name": "green_emerald",
+            "hex": "#50C878"
+        },
+        {
+            "name": "green_forest",
+            "hex": "#228B22"
+        },
+        {
+            "name": "green_light_mint",
+            "hex": "#98FF98"
+        },
+        {
+            "name": "green_olive_1",
+            "hex": "#708238"
+        },
+        {
+            "name": "green_olive_2",
+            "hex": "#808000"
+        },
+        {
+            "name": "green_pistachio",
+            "hex": "#93C572"
+        },
+        {
+            "name": "green_sage",
+            "hex": "#B2AC88"
+        },
+        {
+            "name": "green_seafoam",
+            "hex": "#93E9BE"
+        },
+        {
+            "name": "lavender_pale",
+            "hex": "#DCD0FF"
+        },
+        {
+            "name": "orange_rust",
+            "hex": "#CC5500"
+        },
+        {
+            "name": "orange_light",
+            "hex": "#FFD68A"
+        },
+        {
+            "name": "pink_blush",
+            "hex": "#FFC0CB"
+        },
+        {
+            "name": "taupe",
+            "hex": "#483C32"
+        },
+        {
+            "name": "teal",
+            "hex": "#008080"
+        },
+        {
+            "name": "terracotta",
+            "hex": "#E2725B"
+        },
+        {
+            "name": "white_marble",
+            "hex": "#FFFFFF"
+        },
+        {
+            "name": "yellow_mustard",
+            "hex": "#FFDB58"
+        }
+    ]
+}

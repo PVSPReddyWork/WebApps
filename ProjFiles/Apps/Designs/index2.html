@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interior Design Tool</title>
+  <style>
+    body {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #drawingArea {
+      flex: 1;
+      border: 1px solid #ccc;
+      position: relative;
+      overflow: hidden;
+    }
+    .rectangle {
+      position: absolute;
+      border: 2px solid #000;
+      cursor: grab;
+    }
+    #tools {
+      background: #f4f4f4;
+      border-top: 1px solid #ccc;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+    }
+    #sidebar {
+      width: 200px;
+      position: absolute;
+      right: 10px;
+      top: 10px;
+      height: 90%;
+      background: #fff;
+      border: 1px solid #ccc;
+      overflow-y: auto;
+      display: none;
+      z-index: 999;
+    }
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    #sidebar ul li {
+      padding: 5px;
+      cursor: pointer;
+      border-bottom: 1px solid #ccc;
+    }
+    #toggleSidebar {
+      position: fixed;
+      right: 10px;
+      bottom: 10px;
+      padding: 10px 15px;
+      background: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      font-size: 16px;
+      cursor: pointer;
+      z-index: 1000;
+    }
+    #sliders {
+      position: fixed;
+      left: 10px;
+      bottom: 10px;
+      background: #fff;
+      border: 1px solid #ccc;
+      padding: 10px;
+      display: none;
+    }
+    #sliders label {
+      display: block;
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="drawingArea"></div>
+
+  <div id="sliders">
+    <label>
+      Width:
+      <input type="range" id="widthSlider" min="50" max="500">
+    </label>
+    <label>
+      Height:
+      <input type="range" id="heightSlider" min="50" max="500">
+    </label>
+  </div>
+
+  <button id="toggleSidebar" onclick="toggleSidebar()">☰</button>
+
+  <div id="sidebar">
+    <h4>Rectangles</h4>
+    <button onclick="addRectangle()">Add Rectangle</button>
+    <ul id="rectangleList"></ul>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

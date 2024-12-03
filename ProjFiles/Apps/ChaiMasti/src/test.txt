@@ -1,0 +1,526 @@
+#ifndef HTML_FILES
+#define HTML_FILES
+const char * htmlSSIDPage= "<!DOCTYPE html>"
+"<html>"
+"<body>"
+"<p>This is a HTML only intro page. Please select a button bellow.</p>"
+"<a href=\'/javascript\'>Javascript code</a>"
+"</br>"
+"<a href=\"/cssButton\">CSS code</a>"
+"</body>"
+"</html>";
+
+const char general_html[] PROGMEM = R"rawliteral(
+)rawliteral";
+
+const char test_page_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <div id="mainHolderDiv">
+      <h1>This is a test Page</h1>
+  </body>
+</html>
+)rawliteral";
+
+const char not_connected_to_Internet_page_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <div id="mainHolderDiv">
+      <h1>Not Connected To Internet</h1>
+  </body>
+</html>
+)rawliteral";
+
+const char successfully_registered_to_db_page_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <div id="mainHolderDiv">
+      <h1>Registration successful</h1>
+  </body>
+</html>
+)rawliteral";
+
+const char page_not_found_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+  </head>
+  <body>
+    <div id="mainHolderDiv">
+      <h1>404! server not found</h1>
+  </body>
+</html>
+)rawliteral";
+
+const char intro_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style rel="stylesheet" type="text/css" media="screen">
+    html,
+    body{
+      height: 98%;
+      background-color: #FF0;
+      align-items: center;
+      text-align: center;
+      
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      
+    }
+    #mainHolderDiv{
+      width: 100%;
+      background-color: #FFF0;
+      text-align: center;
+    }
+    #nextButton{
+      background-color: #04AA6D;
+      border: none;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      margin: 4px 2px;
+      border-radius: 50%;
+    }
+    #loginStatus{
+      color: #800000;
+      visibility: hidden;
+    }
+    .inputEntries{
+      height: 20px;
+      width: 70%;
+      margin: 5px;
+    }
+    </style>
+    <script type="application/javascript">
+      var ESP8266UserNameEntry;
+      var ESP8266PasswordEntry;
+      function onLoadBody() {
+        ESP8266UserNameEntry = document.getElementById('ESP8266UserNameEntry');
+        ESP8266PasswordEntry = document.getElementById('ESP8266PasswordEntry');
+      }
+      function showHideStatus(shallShow, displayText = ""){
+        var loginStatus = document.getElementById("loginStatus");
+        if(loginStatus !== null && loginStatus !== undefined)
+        {
+          if(shallShow !== null && shallShow !== undefined)
+          { 
+            if(shallShow === true)
+            {
+              if(displayText !== null && displayText !== undefined && displayText !== ""){
+                loginStatus.innerHTML = displayText;
+              }
+              loginStatus.style.visibility = "visible";
+            }
+          else{
+              loginStatus.style.visibility = "hidden";
+          }
+          }
+        }
+      }
+      function onChangeInputText(){
+        console.log("Changed");
+        showHideStatus(false);
+      }
+      function onNextButtonClick() {
+        if(ESP8266UserNameEntry !== null && ESP8266UserNameEntry !== undefined && ESP8266PasswordEntry !== null && ESP8266PasswordEntry !== undefined){
+          if (ESP8266UserNameEntry.value === "admin" && ESP8266PasswordEntry.value === "admin")
+          {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType("application/json");
+            xobj.onreadystatechange = function () 
+            {
+              console.log(`\nready State: \t${xobj.readyState}, \t\t\tstatus: \t${xobj.status}\n`);
+              if (xobj.readyState == 4 && xobj.status == 200)
+              {
+                var data = xobj.response;
+                var data_JSON = JSON.parse(data);
+                console.log(data_JSON);
+                if(data_JSON !== null && data_JSON !== undefined){
+                  if(data_JSON.statusCode !== 200 && data_JSON.isSuccessful !== true){
+                    showHideStatus(true);
+                  }
+                  else{
+                    showHideStatus(false);
+                    window.location.href='./SSIDConnection';
+                  }
+                }
+              }
+              else{
+                showHideStatus(true);
+              }
+            };
+            xobj.open('POST', './loginToESP8266'+'?userName='+ESP8266UserNameEntry.value+'&userPassword='+ESP8266PasswordEntry.value, true); // Replace 'my_data' with the path to your file
+            xobj.send();
+          }
+          else{
+            alert("invalid username or password");
+          }
+        }
+      }
+    </script>
+  </head>
+  <body onload="onLoadBody();">
+    <div id="mainHolderDiv">
+      <h1>Hello Scout</h1>
+      <h3>Welcome to ESP8266-01 module</h3>
+      <h3>Click on the arrow icon below to navigate to select an SSID to Connect to internet</h3>
+      <br />
+      <form name="addURLForm" action="" onsubmit="onNextButtonClick(); return false;" method="post">
+        <input
+        name="userName"
+        class="inputEntries"
+        type="text"
+        placeholder="Enter UserName"
+        id="ESP8266UserNameEntry"
+        onfocus="onChangeInputText(); return false;"
+        required />
+        <br />
+        <input
+        name="userPassword"
+        class="inputEntries"
+        type="password"
+        placeholder="Enter Password"
+        id="ESP8266PasswordEntry"
+        onfocus="onChangeInputText(); return false;"
+        required />
+        <br />
+        <button id="nextButton">&#10148</button>
+      </form>
+      <p id="loginStatus">Unable to login, Please enter valid credntials</p>
+    </div>
+  </body>
+</html>
+)rawliteral";
+
+const char select_SSID_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style rel="stylesheet" type="text/css" media="screen">
+      #SSIDOptions {
+        width: 20px;
+      }
+      .generalText_p{
+        padding: 0px;
+        margin: 0px;
+      }
+    </style>
+    <script type="application/javascript">
+      var SSIDOptions;
+      var showPasswordCheckBox;
+      var SSIDNameEntry;
+      var SSIDPasswordEntry;
+      var selectedSSID = '';
+      var selectedSSIDPassword = '';
+      function onLoadBody() {
+        SSIDOptions = document.getElementById('SSIDOptions');
+        showPasswordCheckBox = document.getElementById('showPasswordCheckBox');
+        SSIDNameEntry = document.getElementById('SSIDNameEntry');
+        SSIDPasswordEntry = document.getElementById('SSIDPasswordEntry');
+        getAvailableSSIDs();
+      }
+      function updateSSIDs(ssidsData) {
+        console.log(ssidsData);
+        var dataString = `<optgroup id="allSSIDS" label="ALL SSIDs">
+          <option selected disabled value="null">
+                Select an SSID from saved list
+              </option>`; 
+        if(ssidsData !== null){
+          for(var i =0; i<ssidsData.length;i++){
+            dataString += `
+              <option value="${ssidsData[i].password}">${ssidsData[i].ssid}</option>
+            `;
+          }
+          dataString += "</optgroup>";
+        }
+        console.log(dataString);
+        if (SSIDOptions != undefined && SSIDOptions != null) {
+          SSIDOptions.innerHTML = dataString;
+        }
+      }
+      function getAvailableSSIDs() {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType('application/json');
+        xobj.onreadystatechange = function () {
+          if (xobj.readyState == 4 && xobj.status == 200) {
+            var data = xobj.response;
+            var data_JSON = JSON.parse(data);
+            console.log(data_JSON);
+            if (data_JSON !== null && data_JSON !== undefined) {
+              if (
+                data_JSON.statusCode !== 200 &&
+                data_JSON.isSuccessful !== true
+              ) {
+                //showHideStatus(true);
+              } else {
+                //{"statusCode": "200","isSuccessful": true,"data":{"ssidList":[{"ssid": "LIC","password":"","isEncrypted": false,"signalStrength": 135,"ssidChannel":"5"}]},"message": "This data is a valid one"}
+                updateSSIDs(data_JSON.data.ssidList);
+                //showHideStatus(false);
+                //window.location.href = './SSIDConnection.html';
+              }
+            }
+          } else {
+            //showHideStatus(true);
+          }
+        };
+        xobj.open('POST', '/ScanForNetworks', true); // Replace 'my_data' with the path to your file
+        xobj.send();
+      }
+      function onProceedButtonClick() {
+        if (SSIDNameEntry != undefined && SSIDNameEntry != null) {
+          selectedSSID = SSIDNameEntry.value;
+        }
+        if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+          selectedSSIDPassword = SSIDPasswordEntry.value;
+        }
+        if (
+          selectedSSID !== null &&
+          selectedSSID !== undefined &&
+          selectedSSID !== '' &&
+          selectedSSIDPassword !== null &&
+          selectedSSIDPassword !== undefined &&
+          selectedSSIDPassword !== ''
+        ) {
+          //./loginToESP8266
+          //window.location.href='./SSIDConnection.html';
+          var xobj = new XMLHttpRequest();
+          xobj.overrideMimeType('application/json');
+          xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == 200) {
+              var data = xobj.response;
+              var options = JSON.parse(data);
+              console.log(options);
+            }
+          };
+          xobj.open(
+            'POST',
+            '/SelectedNetwork' +
+              '?ssid=' +
+              selectedSSID +
+              '&ssidPassword=' +
+              selectedSSIDPassword,
+            true
+          ); // Replace 'my_data' with the path to your file
+          xobj.send();
+        }
+      }
+      function showPasswordChanged() {
+        if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+          if (SSIDPasswordEntry.type === 'password') {
+            SSIDPasswordEntry.type = 'text';
+          } else {
+            SSIDPasswordEntry.type = 'password';
+          }
+        }
+      }
+      function onSSIDOptionsSelected(e) {
+        //let opt = e.target.options[e.target.selectedIndex].closest('optgroup');
+        let selectedOptionGroup =
+          e.options[e.selectedIndex].closest('optgroup').label;
+        let selectedOptionName = e.options[e.selectedIndex].innerHTML;
+        let selectedOptionValue = e.value;
+        console.log(
+          `${selectedOptionGroup}, ${selectedOptionName}, ${selectedOptionValue}`
+        );
+        if (SSIDNameEntry != undefined && SSIDNameEntry != null) {
+          SSIDNameEntry.value = selectedOptionName;
+        }
+        if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+          SSIDPasswordEntry.value = selectedOptionValue;
+        }
+      }
+    </script>
+  </head>
+  <body onload="onLoadBody();">
+    <div>
+      <div>
+        <button onclick="getAvailableSSIDs();">
+          Scan For Networks
+        </button>
+        <form action="" onsubmit="return false;" method="POST">
+          <input type="text" placeholder="Enter SSID" id="SSIDNameEntry" required/>
+          <select
+            name="AllSSIDs"
+            title="Select an SSID"
+            id="SSIDOptions"
+            onchange="onSSIDOptionsSelected(this); return false;"
+          >
+            <optgroup id="savedSSIDs" label="Saved SSIDs">
+              <option selected disabled value="null">
+                Select an SSID from saved list
+              </option>
+              <option value="password">select this</option>
+            </optgroup>
+            <optgroup id="scannedSSIDs" label="Scanned SSIDs">
+              <option selected disabled value="null">
+                Select an SSID from list
+              </option>
+            </optgroup>
+          </select>
+          <br />
+          <input
+            type="password"
+            placeholder="Enter Password"
+            id="SSIDPasswordEntry"
+            required
+          />
+          <input
+            type="checkbox"
+            title="Show Password"
+            id="showPasswordCheckBox"
+            onchange="showPasswordChanged();"
+          />
+          <br />
+          <p class="generalText_p">Select an action</p>
+          <input
+            type="radio"
+            name="SSIDAction"
+            onchange="showSSIDActionChanged();"
+            value="save">Save in DB for future use</input>
+          <br/>
+          <input
+            type="radio"
+            name="SSIDAction"
+            onchange="showSSIDActionChanged();"
+            value="delete">Delete from DB</input>
+          <br/>
+          <button onclick="onProceedButtonClick();">Proceed</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>
+)rawliteral";
+#endif
+
+
+
+        /*
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            position: relative;
+            animation: rotate 1s linear infinite
+        }
+
+        .loader::before,
+        .loader::after {
+            content: "";
+            box-sizing: border-box;
+            position: absolute;
+            inset: 0px;
+            border-radius: 50%;
+            border: 5px solid #FFF;
+            animation: prixClipFix 2s linear infinite;
+        }
+
+        .loader::after {
+            border-color: #FF3D00;
+            animation: prixClipFix 2s linear infinite, rotate 0.5s linear infinite reverse;
+            inset: 6px;
+        }
+
+        @keyframes rotate {
+            0% {
+                transform: rotate(0deg)
+            }
+
+            100% {
+                transform: rotate(360deg)
+            }
+        }
+
+        @keyframes prixClipFix {
+            0% {
+                clip-path: polygon(50% 50%, 0 0, 0 0, 0 0, 0 0, 0 0)
+            }
+
+            25% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 0, 100% 0, 100% 0)
+            }
+
+            50% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 100% 100%, 100% 100%)
+            }
+
+            75% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 100%)
+            }
+
+            100% {
+                clip-path: polygon(50% 50%, 0 0, 100% 0, 100% 100%, 0 100%, 0 0)
+            }
+        }
+        */
+
+        /*
+        .loader {
+  width: 48px;
+  height: 48px;
+  display: inline-block;
+  position: relative;
+  background-color: #FFF;
+  background: radial-gradient(ellipse at center, #FF3D00 0%, #FF3D00 14%, #FFF 15%, #FFF 100%);
+  background-size: cover;
+  background-position: center;
+  border-radius: 50%;
+}
+.loader::after,
+.loader::before {
+  content: '';  
+  position: absolute;
+  height: 16px;
+  width: 4px;
+  background: #FF3D00;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) rotate(0deg);
+  transform-origin: 25% 0;
+  box-sizing: border-box;
+  animation: rotation 10s linear infinite;
+}
+.loader::before {
+  height: 22px;
+  width: 2px;
+  transform: translateX(-50%) rotate(0deg);
+  animation-duration: 1s;
+} 
+@keyframes rotation {
+  0%    { transform: rotate(0deg)}
+  100%  { transform: rotate(360deg)}
+} 
+        */

@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Home</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style rel="stylesheet" type="text/css" media="screen">
+        html,
+        body {
+            background-color: #90E4C1;
+            align-items: center;
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .bodyHolderDiv {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #mainHolderDiv {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            width: fit-content;
+        }
+
+        .wifi_access_div {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            margin: 0px;
+            padding: 0px;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .networkStatusText {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .networkStatusDiv,
+        .networkChangeDiv {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            margin: 0px;
+            padding: 0px;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .form_wifi_data_form {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            justify-content: center;
+            margin: 0px;
+            padding: 0px;
+            width: fit-content;
+            height: fit-content;
+        }
+
+        .sideByDataHolderDiv {
+            display: flex;
+            flex-direction: row;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #nextButton {
+            background-color: #04AA6D;
+            border: none;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            margin: 4px 2px;
+            border-radius: 50%;
+        }
+
+        #loginStatus {
+            color: #800000;
+            visibility: hidden;
+        }
+
+        .inputEntries {
+            height: 20px;
+            width: 70%;
+            margin: 5px;
+        }
+
+        .game_mode_div {
+            display: flex;
+        }
+
+        .led_mode_div {
+            display: flex;
+        }
+
+        #loaderDiv {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0006;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            border: 3px solid;
+            border-color: #FFF #FFF transparent transparent;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loader::after,
+        .loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid;
+            border-color: transparent transparent #FF3D00 #FF3D00;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotationBack 0.5s linear infinite;
+            transform-origin: center center;
+        }
+
+        .loader::before {
+            width: 32px;
+            height: 32px;
+            border-color: #FFF #FFF transparent transparent;
+            animation: rotation 1.5s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotationBack {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+    </style>
+    <script type="application/javascript">
+        function showLoader(shallShow) {
+            var LoaderDiv = document.getElementById('loaderDiv');
+            if (LoaderDiv !== null && LoaderDiv !== undefined) {
+                if (shallShow) {
+                    LoaderDiv.style.visibility = "visible";
+                }
+                else {
+                    LoaderDiv.style.visibility = "hidden";
+                }
+            }
+        }
+        function showHideStatus(shallShow, displayText = "") {
+            var loginStatus = document.getElementById("loginStatus");
+            if (loginStatus !== null && loginStatus !== undefined) {
+                if (shallShow !== null && shallShow !== undefined) {
+                    if (shallShow === true) {
+                        if (displayText !== null && displayText !== undefined && displayText !== "") {
+                            loginStatus.innerHTML = displayText;
+                        }
+                        loginStatus.style.visibility = "visible";
+                    }
+                    else {
+                        loginStatus.style.visibility = "hidden";
+                    }
+                }
+            }
+        }
+        function CheckisConnectedToNetwork() {
+            showLoader(true);
+            try {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.onreadystatechange = function () {
+                    try {
+                        console.log(`\nready State: \t${xobj.readyState}, \t\t\tstatus: \t${xobj.status}\n`);
+                        if (xobj.readyState == 4 && xobj.status == 200) {
+                            var data = xobj.response;
+                            var data_JSON = JSON.parse(data);
+                            console.log(data_JSON);
+                            if (data_JSON !== null && data_JSON !== undefined) {
+                                if (data_JSON.statusCode !== 200 && data_JSON.isSuccessful !== true) {
+                                    showLoader(false);
+                                    showHideStatus(true);
+                                }
+                                else {
+                                    showLoader(false);
+                                    showHideStatus(false);
+                                    window.location.href = './SSIDConnection';
+                                }
+                            }
+                            else {
+                                showLoader(false);
+                            }
+                        }
+                        else {
+                            showHideStatus(true);
+                            showLoader(false);
+                        }
+                    }
+                    catch (ex) {
+                        showLoader(false);
+                    }
+                };
+                xobj.open('GET', './isConnectedToNetwork', true); // Replace 'my_data' with the path to your file
+                xobj.send();
+            }
+            catch (ex) {
+                showLoader(false);
+            }
+        }
+        function onChangeInputText() {
+            console.log("Changed");
+            showHideStatus(false);
+        }
+
+
+
+        function updateSSIDs(ssidsData) {
+            console.log(ssidsData);
+            var dataString = `<optgroup id="allSSIDS" label="ALL SSIDs">
+          <option selected disabled value="null">
+                Select an SSID from saved list
+              </option>`;
+            if (ssidsData !== null) {
+                for (var i = 0; i < ssidsData.length; i++) {
+                    dataString += `
+              <option value="${ssidsData[i].bssid}/${ssidsData[i].password}">${ssidsData[i].ssid}</option>
+            `;
+                }
+                dataString += "</optgroup>";
+            }
+            console.log(dataString);
+            if (SSIDOptions != undefined && SSIDOptions != null) {
+                SSIDOptions.innerHTML = dataString;
+            }
+        }
+        var ssidList = [];
+        var selected_bssid = "";
+        function getAvailableSSIDs() {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType('application/json');
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == 200) {
+                    var data = xobj.response;
+                    var data_JSON = JSON.parse(data);
+                    console.log(data_JSON);
+                    if (data_JSON !== null && data_JSON !== undefined) {
+                        if (
+                            data_JSON.statusCode !== 200 &&
+                            data_JSON.isSuccessful !== true
+                        ) {
+                            //showHideStatus(true);
+                        } else {
+                            //{"statusCode": "200","isSuccessful": true,"data":{"ssidList":[{"ssid": "LIC","password":"","isEncrypted": false,"signalStrength": 135,"ssidChannel":"5"}]},"message": "This data is a valid one"}
+                            ssidList = data_JSON.data.ssidList;
+                            updateSSIDs(data_JSON.data.ssidList);
+                            //showHideStatus(false);
+                            //window.location.href = './SSIDConnection.html';
+                        }
+                    }
+                } else {
+                    //showHideStatus(true);
+                }
+            };
+            xobj.open('POST', '/ScanForNetworks', true); // Replace 'my_data' with the path to your file
+            xobj.send();
+        }
+        function onProceedButtonClick() {
+            showLoader(true);
+            try {
+                if (SSIDNameEntry != undefined && SSIDNameEntry != null) {
+                    selectedSSID = SSIDNameEntry.value;
+                }
+                if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+                    selectedSSIDPassword = SSIDPasswordEntry.value;
+                }
+                let SSIDActionSaveValue = false;
+                let SSIDActionDeleteValue = false;
+                let SSIDAction = document.getElementsByName("SSIDAction");
+                if (SSIDAction != undefined && SSIDAction != null) {
+                    if (SSIDAction[0].checked) {
+                        SSIDActionSaveValue = true;
+                    }
+                    else if (SSIDAction[1].checked) {
+                        SSIDActionDeleteValue = true;
+                    }
+                    else { }
+                }
+                if (
+                    selectedSSID !== null &&
+                    selectedSSID !== undefined &&
+                    selectedSSID !== '' &&
+                    selectedSSIDPassword !== null &&
+                    selectedSSIDPassword !== undefined &&
+                    selectedSSIDPassword !== ''
+                ) {
+                    //./loginToESP8266
+                    //window.location.href='./SSIDConnection.html';
+                    var xobj = new XMLHttpRequest();
+                    xobj.overrideMimeType('application/json');
+                    xobj.onreadystatechange = function () {
+                        try {
+                            if (xobj.readyState == 4 && xobj.status == 200) {
+                                var data = xobj.response;
+                                var options = JSON.parse(data);
+                                console.log(options);
+                            }
+                            showLoader(false);
+                        } catch (ex) {
+                            showLoader(false);
+                        }
+                    };
+                    let urlString = '/SelectedNetwork' + '?ssid=' + selectedSSID + '&ssidPassword=' + selectedSSIDPassword + '&ssidbssid=' + selected_bssid + '&saveSSID=' + SSIDActionSaveValue + '&deleteSSID=' + SSIDActionDeleteValue;
+                    console.log(urlString);
+                    xobj.open(
+                        'POST',
+                        urlString,
+                        true
+                    ); // Replace 'my_data' with the path to your file
+                    xobj.send();
+                }
+            }
+            catch (ex) {
+                showLoader(false);
+            }
+        }
+        function showPasswordChanged() {
+            if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+                if (SSIDPasswordEntry.type === 'password') {
+                    SSIDPasswordEntry.type = 'text';
+                } else {
+                    SSIDPasswordEntry.type = 'password';
+                }
+            }
+        }
+        function onSSIDOptionsSelected(e) {
+            //let opt = e.target.options[e.target.selectedIndex].closest('optgroup');
+            let selectedOptionGroup =
+                e.options[e.selectedIndex].closest('optgroup').label;
+            let selectedOptionName = e.options[e.selectedIndex].innerHTML;
+            let selectedOptionValue = e.value;
+            console.log(
+                `${selectedOptionGroup}, ${selectedOptionName}, ${selectedOptionValue}`
+            );
+            if (SSIDNameEntry != undefined && SSIDNameEntry != null) {
+                SSIDNameEntry.value = selectedOptionName;
+            }
+            selected_bssid = selectedOptionValue.split("/")[0] ?? "";
+            if (SSIDPasswordEntry != undefined && SSIDPasswordEntry != null) {
+                SSIDPasswordEntry.value = selectedOptionValue.split("/")[1] ?? "";
+            }
+        }
+
+        var SSIDOptions;
+        var showPasswordCheckBox;
+        var SSIDNameEntry;
+        var SSIDPasswordEntry;
+        var selectedSSID = '';
+        var selectedSSIDPassword = '';
+        function onLoadBody() {
+            SSIDOptions = document.getElementById('SSIDOptions');
+            showPasswordCheckBox = document.getElementById('showPasswordCheckBox');
+            SSIDNameEntry = document.getElementById('SSIDNameEntry');
+            SSIDPasswordEntry = document.getElementById('SSIDPasswordEntry');
+            CheckisConnectedToNetwork();
+        }
+        function openJoystickPage(){
+            try{
+                window.location.href = './openJoyStickPage';
+            }
+            catch(ex){
+                console.log(ex);
+            }
+        }
+    </script>
+</head>
+
+<body onload="onLoadBody();">
+    <div class="bodyHolderDiv">
+        <div id="mainHolderDiv">
+            <div class="wifi_access_div">
+                <div class="networkStatusDiv">
+                    <p class="networkStatusText" id="ssid_text">Connected to: </p>
+                    <p class="networkStatusText" id="networkStrength_text">Network Strength: </p>
+                    <p class="networkStatusText" id="ssid_text">Internet Status: </p>
+                </div>
+                <div class="networkChangeDiv">
+                    <div class="form_wifi_data_form">
+                        <select name="AllSSIDs" title="Select an SSID" id="SSIDOptions"
+                            onchange="onSSIDOptionsSelected(this); return false;">
+                            <optgroup id="savedSSIDs" label="Saved SSIDs">
+                                <option selected disabled value="null">
+                                    Select an SSID from saved list
+                                </option>
+                                <option value="password">select this</option>
+                            </optgroup>
+                            <optgroup id="scannedSSIDs" label="Scanned SSIDs">
+                                <option selected disabled value="null">
+                                    Select an SSID from list
+                                </option>
+                            </optgroup>
+                        </select>
+                        <input type="text" placeholder="Enter SSID" id="SSIDNameEntry" required />
+                        <div class="sideByDataHolderDiv">
+                            <input type="password" placeholder="Enter Password" id="SSIDPasswordEntry" required />
+                            <input type="checkbox" title="Show Password" id="showPasswordCheckBox"
+                                onchange="showPasswordChanged();" />
+                        </div>
+                        <!-- <p class="generalText_p">Select an action</p> -->
+                        <div class="sideByDataHolderDiv">
+                            <input type="radio" name="SSIDAction" value="save" />
+                            <p>Save in DB for future use</p>
+                        </div>
+                        <div class="sideByDataHolderDiv">
+                            <input type="radio" name="SSIDAction" value="delete" />
+                            <p>Delete from DB</p>
+                        </div>
+                        <div class="sideByDataHolderDiv">
+                            <button onclick="getAvailableSSIDs();">Scan for Network</button>
+                            <button onclick="onProceedButtonClick();">Proceed</button>
+                        </div>
+                        <p id="loginStatus">Unable to login, Please enter valid credntials</p>
+                    </div>
+
+                </div>
+            </div>
+            <div class="game_mode_div">
+                <button onclick="openJoystickPage();">Open Joystick</button>
+            </div>
+            <div class="led_mode_div">
+
+            </div>
+
+        </div>
+
+        <div id="loaderDiv">
+            <span class="loader"></span>
+        </div>
+    </div>
+</body>
+
+</html>

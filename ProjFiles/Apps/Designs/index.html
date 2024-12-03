@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Design App</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Floating Button -->
+  <div id="floatingButton" onclick="toggleSidebar()">☰</div>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <button onclick="addRectangle()">Add Rectangle</button>
+    <button onclick="saveDesign()">Save Current Design</button>
+    <button onclick="exportDesign()">Export Current Design</button>
+    <button onclick="exportAllDesigns()">Export All Designs</button>
+    <button onclick="TakeScreenshot()">Take Screenshot</button>
+    <input type="file" id="importInput" onchange="importDesign()" style="display: none;">
+    <button onclick="document.getElementById('importInput').click()">Import Design</button>
+    <input type="file" id="importAllInput" onchange="importAllDesigns()" style="display: none;">
+    <button onclick="document.getElementById('importAllInput').click()">Import All Designs</button>
+    <button onclick="clearDrawingArea()">Clear Drawing Area</button>
+    <hr>
+    <label for="widthSlider">Width:</label>
+    <input type="range" id="widthSlider" min="10" max="500">
+    <label for="heightSlider">Height:</label>
+    <input type="range" id="heightSlider" min="10" max="500">
+    <button onclick="AddImageClicked()">Add Image</button>
+    <input type="checkbox" id="fitToSizeCheckbox"> Fit Image to Rectangle
+    <button onclick="DeleteRectangle()">Delete Rectangle</button>
+    <button onclick="ToggleBorders()">Toggle Borders</button>
+    <hr>
+    <button onclick="toggleCollapsibleList('workList')">Toggle Work List</button>
+    <div id="workList" class="collapsible-list"></div>
+    <button onclick="toggleCollapsibleList('rectangleList')">Toggle Rectangle List</button>
+    <ul id="rectangleList" class="collapsible-list"></ul>
+  </div>
+
+  <!-- Drawing Area -->
+  <div id="drawingArea"></div>
+
+  <!-- JavaScript -->
+  <script src="app.js"></script>
+</body>
+</html>

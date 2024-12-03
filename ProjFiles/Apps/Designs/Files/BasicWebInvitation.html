@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Invitation</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+        }
+        .container {
+            padding: 20px;
+        }
+        .invitation {
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .banana-tree {
+            position: fixed;
+            width: 100px;
+            height: auto;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .left-tree {
+            left: 0;
+        }
+        .right-tree {
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <svg class="banana-tree left-tree" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="10" height="100" x="45" y="100" fill="#8B4513"/>
+        <circle cx="50" cy="80" r="20" fill="#228B22"/>
+        <circle cx="40" cy="60" r="15" fill="#228B22"/>
+        <circle cx="60" cy="60" r="15" fill="#228B22"/>
+        <circle cx="30" cy="40" r="10" fill="#228B22"/>
+        <circle cx="70" cy="40" r="10" fill="#228B22"/>
+    </svg>
+
+    <svg class="banana-tree right-tree" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+        <rect width="10" height="100" x="45" y="100" fill="#8B4513"/>
+        <circle cx="50" cy="80" r="20" fill="#228B22"/>
+        <circle cx="40" cy="60" r="15" fill="#228B22"/>
+        <circle cx="60" cy="60" r="15" fill="#228B22"/>
+        <circle cx="30" cy="40" r="10" fill="#228B22"/>
+        <circle cx="70" cy="40" r="10" fill="#228B22"/>
+    </svg>
+
+    <div class="container">
+        <div class="invitation">
+            <h1 id="greeting">Welcome!</h1>
+            <p id="message">We're excited to have you join us for the special event!</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Function to get query parameters from URL
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            // Retrieve the name from URL
+            const name = getQueryParam('name') || 'Guest';
+
+            // Localization strings (simple example)
+            const localization = {
+                en: {
+                    greeting: `Welcome, ${name}!`,
+                    message: "We're excited to have you join us for the special event!"
+                },
+                es: {
+                    greeting: `¡Bienvenido, ${name}!`,
+                    message: "¡Estamos emocionados de que te unas a nosotros para el evento especial!"
+                }
+                // Add more languages here
+            };
+
+            // Determine the locale (default to 'en')
+            const locale = getQueryParam('lang') || 'en';
+
+            // Apply localized strings
+            document.getElementById('greeting').textContent = localization[locale].greeting;
+            document.getElementById('message').textContent = localization[locale].message;
+        });
+    </script>
+</body>
+</html>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Invitation</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            overflow-x: hidden;
+            position: relative;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .container {
+            padding: 20px;
+        }
+        .invitation {
+            background: var(--card-background);
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .banana-tree {
+            position: fixed;
+            width: 100px;
+            height: auto;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .left-tree {
+            left: 0;
+        }
+        .right-tree {
+            right: 0;
+        }
+        select, .mode-toggle {
+            padding: 10px;
+            font-size: 16px;
+            margin: 20px;
+            cursor: pointer;
+        }
+        .dark-mode {
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --card-background: #1e1e1e;
+        }
+        .light-mode {
+            --background-color: #ffffff;
+            --text-color: #000000;
+            --card-background: #f5f5f5;
+        }
+        .floating-icon {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+        .settings-panel {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 300px;
+            background: var(--card-background);
+            border-top: 1px solid var(--text-color);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            transform: translateY(100%);
+            transition: transform 0.3s;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .settings-panel.active {
+            transform: translateY(0);
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- Left Banana Tree -->
+<svg class="banana-tree left-tree" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Tree Trunk -->
+    <rect x="40" y="60" width="20" height="80" fill="#8B4513"/>
+    <!-- Leaves -->
+    <path d="M50,20 C30,30 30,50 50,60 C70,50 70,30 50,20 Z" fill="#228B22"/>
+    <path d="M50,40 C35,45 35,65 50,70 C65,65 65,45 50,40 Z" fill="#228B22"/>
+    <path d="M50,60 C40,70 40,90 50,100 C60,90 60,70 50,60 Z" fill="#228B22"/>
+    <!-- Bananas -->
+    <ellipse cx="50" cy="100" rx="10" ry="20" fill="#FFFF00" />
+    <ellipse cx="55" cy="110" rx="8" ry="16" fill="#FFFF00" />
+</svg>
+
+<!-- Right Banana Tree -->
+<svg class="banana-tree right-tree" viewBox="0 0 100 200" xmlns="http://www.w3.org/2000/svg">
+    <!-- Tree Trunk -->
+    <rect x="40" y="60" width="20" height="80" fill="#8B4513"/>
+    <!-- Leaves -->
+    <path d="M50,20 C30,30 30,50 50,60 C70,50 70,30 50,20 Z" fill="#228B22"/>
+    <path d="M50,40 C35,45 35,65 50,70 C65,65 65,45 50,40 Z" fill="#228B22"/>
+    <path d="M50,60 C40,70 40,90 50,100 C60,90 60,70 50,60 Z" fill="#228B22"/>
+    <!-- Bananas -->
+    <ellipse cx="50" cy="100" rx="10" ry="20" fill="#FFFF00" />
+    <ellipse cx="55" cy="110" rx="8" ry="16" fill="#FFFF00" />
+</svg>
+
+<img src="./Assets/Treees (1).svg" class="banana-tree left-tree" alt="Banana Tree">
+<img src="./Assets/Treees (1).svg" class="banana-tree right-tree" alt="Banana Tree">
+
+    <div class="container">
+        <div class="invitation">
+            <h1 id="greeting">Welcome!</h1>
+            <p id="message">We're excited to have you join us for the special event!</p>
+        </div>
+    </div>
+
+    <button class="floating-icon" id="settings-btn">⚙️</button>
+
+    <div class="settings-panel" id="settings-panel">
+        <button class="close-btn" id="close-btn">×</button>
+        <h2>User Preferences</h2>
+        <select id="language-selector">
+            <option value="en-US">English (US)</option>
+            <option value="en-UK">English (UK)</option>
+            <option value="de">German</option>
+            <option value="te">Telugu</option>
+            <option value="hi">Hindi</option>
+        </select>
+        <button class="mode-toggle" id="mode-toggle">Toggle Dark/Light Mode</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const localization = {
+                "en-US": {
+                    greeting: "Welcome, Guest!",
+                    message: "We're excited to have you join us for the special event!"
+                },
+                "en-UK": {
+                    greeting: "Welcome, Guest!",
+                    message: "We're excited to have you join us for the special event!"
+                },
+                "de": {
+                    greeting: "Willkommen, Gast!",
+                    message: "Wir freuen uns, dass Sie an der besonderen Veranstaltung teilnehmen!"
+                },
+                "te": {
+                    greeting: "స్వాగతం, అతిథి!",
+                    message: "ప్రత్యేకమైన ఈ వేడుకలో మీకు కలుసుకోవడం మాకు సంతోషంగా ఉంది!"
+                },
+                "hi": {
+                    greeting: "स्वागत है, मेहमान!",
+                    message: "हम खुश हैं कि आप इस विशेष कार्यक्रम में हमारे साथ हैं!"
+                }
+            };
+
+            function getQueryParam(param) {
+                const urlParams = new URLSearchParams(window.location.search);
+                return urlParams.get(param);
+            }
+
+            function setLocalStorage(key, value) {
+                localStorage.setItem(key, value);
+            }
+
+            function getLocalStorage(key, defaultValue) {
+                return localStorage.getItem(key) || defaultValue;
+            }
+
+            function applyLocalization(lang) {
+                document.getElementById('greeting').textContent = localization[lang].greeting;
+                document.getElementById('message').textContent = localization[lang].message;
+            }
+
+            function applyMode(mode) {
+                document.body.className = mode;
+                setLocalStorage('mode', mode);
+            }
+
+            const savedLang = getLocalStorage('lang', 'en-US');
+            const savedMode = getLocalStorage('mode', 'light-mode');
+
+            document.getElementById('language-selector').value = savedLang;
+            applyLocalization(savedLang);
+            applyMode(savedMode);
+
+            document.getElementById('language-selector').addEventListener('change', function(event) {
+                const selectedLang = event.target.value;
+                setLocalStorage('lang', selectedLang);
+                applyLocalization(selectedLang);
+            });
+
+            document.getElementById('mode-toggle').addEventListener('click', function() {
+                const currentMode = document.body.className;
+                const newMode = currentMode === 'dark-mode' ? 'light-mode' : 'dark-mode';
+                applyMode(newMode);
+            });
+
+            document.getElementById('settings-btn').addEventListener('click', function() {
+                document.getElementById('settings-panel').classList.toggle('active');
+            });
+
+            document.getElementById('close-btn').addEventListener('click', function() {
+                document.getElementById('settings-panel').classList.remove('active');
+            });
+        });
+    </script>
+</body>
+</html>

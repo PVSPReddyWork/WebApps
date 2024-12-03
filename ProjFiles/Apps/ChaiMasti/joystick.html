@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Joystick</title>
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      max-width: 100vw;
+    }
+
+    .joystick {
+      position: relative;
+      width: 200px;
+      height: 200px;
+      background-color: #ddd;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 20px;
+      touch-action: none;
+    }
+
+    .inner-circle {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: #555;
+      border-radius: 50%;
+    }
+
+    .output {
+      font-size: 1.2em;
+      color: #333;
+    }
+
+    @media (min-width: 600px) {
+      .container {
+        flex-direction: row;
+        gap: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="joystick" id="joystick">
+      <div class="inner-circle" id="inner-circle"></div>
+    </div>
+    <div class="output" id="output">X: 0, Y: 0</div>
+  </div>
+
+  <script>
+    const joystick = document.getElementById('joystick');
+    const innerCircle = document.getElementById('inner-circle');
+    const output = document.getElementById('output');
+
+    const outerRadius = joystick.clientWidth / 2;
+    const innerRadius = innerCircle.clientWidth / 2;
+    let startX, startY;
+
+    function updateJoystick(x, y) {
+      const dx = x - startX;
+      const dy = y - startY;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      const maxDistance = outerRadius - innerRadius;
+
+      const angle = Math.atan2(dy, dx);
+      const boundedDistance = Math.min(distance, maxDistance);
+
+      const posX = Math.cos(angle) * boundedDistance;
+      const posY = Math.sin(angle) * boundedDistance;
+
+      innerCircle.style.transform = `translate(${posX}px, ${posY}px)`;
+
+      const normalizedX = Math.round((posX / maxDistance) * 1023);
+      const normalizedY = Math.round((posY / maxDistance) * 1023);
+
+      output.textContent = `X: ${normalizedX}, Y: ${normalizedY}`;
+    }
+
+    function resetJoystick() {
+      innerCircle.style.transform = 'translate(0px, 0px)';
+      output.textContent = 'X: 0, Y: 0';
+    }
+
+    joystick.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      startX = e.clientX;
+      startY = e.clientY;
+
+      function onMouseMove(event) {
+        updateJoystick(event.clientX, event.clientY);
+      }
+
+      function onMouseUp() {
+        resetJoystick();
+        document.removeEventListener('mousemove', onMouseMove);
+        document.removeEventListener('mouseup', onMouseUp);
+      }
+
+      document.addEventListener('mousemove', onMouseMove);
+      document.addEventListener('mouseup', onMouseUp);
+    });
+
+    joystick.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+
+      function onTouchMove(event) {
+        updateJoystick(event.touches[0].clientX, event.touches[0].clientY);
+      }
+
+      function onTouchEnd() {
+        resetJoystick();
+        document.removeEventListener('touchmove', onTouchMove);
+        document.removeEventListener('touchend', onTouchEnd);
+      }
+
+      document.addEventListener('touchmove', onTouchMove);
+      document.addEventListener('touchend', onTouchEnd);
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>House-like QR Code Generator</title>
+</head>
+<body>
+    <h1>House-like QR Code Generator</h1>
+    <input type="text" id="title" placeholder="Enter Title">
+    <input type="text" id="urls" placeholder="Enter URLs separated by commas">
+    <button onclick="generateCustomQRCodes()">Generate QR Codes</button>
+    <div id="qrContainer"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<script>
+    function generateCustomQRCodes() {
+        const container = document.getElementById('qrContainer');
+        container.innerHTML = '';  // Clear previous QR codes
+        const urls = document.getElementById('urls').value.split(',');
+        const title = document.getElementById('title').value.trim();
+
+        urls.forEach((url) => {
+            const sanitizedTitle = url.trim().replace(/https?:\/\//, '').replace(/[^a-zA-Z0-9]/g, '_');
+            const div = document.createElement('div');
+            div.style.textAlign = 'center';
+            div.style.marginBottom = '20px';
+
+            const qr = new QRCode(document.createElement('div'), {
+                text: url.trim(),
+                width: 200,
+                height: 200,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            const canvas = createHouseLikeQRCodeImage(qr._oDrawing._elCanvas, title);
+            const img = new Image();
+            img.src = canvas.toDataURL();
+
+            div.appendChild(img);
+
+            const downloadButton = document.createElement('button');
+            downloadButton.innerText = 'Download';
+            downloadButton.onclick = function() {
+                downloadCustomQRCode(canvas, sanitizedTitle);
+            };
+
+            div.appendChild(downloadButton);
+            container.appendChild(div);
+        });
+    }
+
+    function createHouseLikeQRCodeImage(qrCanvas, title) {
+        const qrSize = qrCanvas.width;
+        const padding = 20;
+        const fontSize = 20;
+        const spaceBetween = 20; // Gap between QR code and text
+
+        const roofHeight = qrSize / 3; // Height of the roof
+        const roofWidth = qrSize * 1.5;  // Width of the roof
+        const roofOverhang = (roofWidth - qrSize) / 2;
+
+        const canvasWidth = roofWidth + (padding * 2); // Adjusted width
+        const canvasHeight = canvasWidth + 10; // Adjusted height
+
+        // Create the canvas
+        const finalCanvas = document.createElement('canvas');
+        finalCanvas.width = canvasWidth;
+        finalCanvas.height = canvasHeight;
+        const ctx = finalCanvas.getContext('2d');
+
+        ctx.fillStyle = '#FFFFFF'; // Background color
+        ctx.fillRect(0, 0, finalCanvas.width, finalCanvas.height);
+
+        // Draw elements
+        drawChimney(ctx, canvasWidth, roofHeight, qrSize, padding);
+        drawRoof(ctx, canvasWidth, padding, roofHeight, roofWidth);
+        drawVentilator(ctx, canvasWidth, roofHeight, qrSize, padding);
+        drawText(ctx, title, canvasWidth, fontSize, padding, roofHeight, qrSize, spaceBetween);
+        drawQRCode(ctx, qrCanvas, canvasWidth, roofOverhang, roofHeight, spaceBetween, padding);
+
+        return finalCanvas;
+    }
+
+    function drawRoof(ctx, canvasWidth, padding, roofHeight, roofWidth) {
+        // Define local variables
+        const roofBaseX = canvasWidth / 2;
+        const roofBaseY = padding;
+
+        // Draw the roof using an SVG path with fill color
+        const region = new Path2D();
+        region.moveTo(roofBaseX, roofBaseY);
+        region.lineTo(padding, roofHeight + padding);
+        region.lineTo(canvasWidth - padding, roofHeight + padding);
+        region.closePath();
+        
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fill(region, "evenodd");
+        ctx.strokeStyle = '#000000';
+        ctx.lineWidth = 3;
+        ctx.stroke(region, "evenodd");
+    }
+
+    function drawChimney(ctx, canvasWidth, roofHeight, qrSize, padding) {
+        // Define local variables
+        const chimneyWidth = qrSize * 0.2;
+        const chimneyHeight = roofHeight * 0.6;
+        const chimneyX = canvasWidth * 0.7;
+        const chimneyY = roofHeight * 0.2 + padding;
+
+        // Draw the chimney as a line diagram with no fill
+        ctx.strokeStyle = '#000000';
+        ctx.beginPath();
+        ctx.rect(chimneyX, chimneyY, chimneyWidth, chimneyHeight);
+        ctx.lineWidth = 3;
+        ctx.stroke();
+    }
+
+    function drawVentilator(ctx, canvasWidth, roofHeight, qrSize, padding) {
+        // Define local variables
+        const ventilatorRadius = qrSize * 0.1;
+        const ventilatorX = canvasWidth / 2;
+        const ventilatorY = roofHeight * 0.5 + padding;
+
+        // Draw the circle-shaped ventilator in the center of the roof
+        ctx.beginPath();
+        ctx.arc(ventilatorX, ventilatorY, ventilatorRadius, 0, 2 * Math.PI);
+        ctx.stroke();
+    }
+
+    function drawText(ctx, title, canvasWidth, fontSize, padding, roofHeight, qrSize, spaceBetween) {
+        // Define local variables
+        const textCanvas = document.createElement('canvas');
+        textCanvas.width = canvasWidth - (padding * 2); // Match the roof width
+        textCanvas.height = fontSize + padding / 2 + padding / 2;
+        const textCtx = textCanvas.getContext('2d');
+        
+        textCtx.fillStyle = '#FFFFFF'; // Background color for text
+        textCtx.fillRect(0, 0, textCanvas.width, textCanvas.height);
+        textCtx.strokeStyle = '#000000'; // Border color
+        textCtx.lineWidth = 3; // Border width
+        textCtx.strokeRect(0, 0, textCanvas.width, textCanvas.height);
+        textCtx.fillStyle = '#000000'; // Text color
+        textCtx.font = `${fontSize}px Arial`;
+        textCtx.textAlign = 'center';
+        textCtx.textBaseline = 'middle';
+        textCtx.fillText(title, textCanvas.width / 2, textCanvas.height / 2);
+
+        // Draw the text canvas on the final canvas
+        const textYPosition = roofHeight + qrSize + spaceBetween + padding;
+        ctx.drawImage(textCanvas, padding, textYPosition);
+    }
+
+    function drawQRCode(ctx, qrCanvas, canvasWidth, roofOverhang, roofHeight, spaceBetween, padding) {
+        // Draw the QR code in the middle (house body)
+        ctx.drawImage(qrCanvas, roofOverhang + padding, roofHeight + spaceBetween / 2 + padding);
+    }
+
+    function downloadCustomQRCode(canvas, title) {
+        const link = document.createElement('a');
+        link.download = `${title}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+</script>
+</html>

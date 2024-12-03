@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalized Invitation</title>
+    <link rel="stylesheet" href="styles.css"> <!-- Link to the external CSS file -->
+</head>
+
+<body>
+
+    <!-- SVGs for Banana Trees -->
+    <img src="./Assets/BananaTreeLeft.svg" class="banana-tree left-tree" alt="Banana Tree">
+    <img src="./Assets/BananaTreeRight.svg" class="banana-tree right-tree" alt="Banana Tree">
+
+    <div class="container">
+        <div class="div_good_sign_container">
+            <div class="div_good_sign_holder">
+                <p class="p_good_sign" id="good_sign_1"></p>
+                <p class="p_good_sign" style="text-align: center;" id="good_sign_2"></p>
+                <p class="p_good_sign" id="good_sign_3"></p>
+            </div>
+            <div class="div_image_divine_container">
+            <!-- <img src="./Assets/BananaTreeLeft.svg" class="banana_tree_small left-tree-small" alt="Banana Tree"> -->
+            <img class="img_lordGanesha" src="./Assets//LordGanesha2.png" alt="Lord Ganesha" />
+            <!-- <img src="./Assets/BananaTreeRight.svg" class="banana_tree_small right-tree-small" alt="Banana Tree"> -->
+        </div>
+        </div>
+        <div class="invitation">
+            <h1 id="greeting_1">Welcome!</h1>
+            <h1 id="greeting_2">Welcome!</h1>
+            <!-- <p id="salutation"></p> -->
+            <p id="introduction">We're excited to have you join us for the special event!</p>
+            <div class="div_venue_timings_container">
+                <div class="div_hw_timings_holder">
+                    <p class="p_mini_headings" id="house_warming_timings_text"></p>
+                    <p id="house_warming_timings"></p>
+                </div>
+                <div class="div_venue_address_holder">
+                    <p class="p_mini_headings" id="venue"></p>
+                    <a href="https://maps.app.goo.gl/1qux2G84a6cVJ4pa7" target="_blank">
+                        <p id="venue_address"></p>
+                    </a>
+                </div>
+                <div class="div_lunch_timings_holder">
+                    <p class="p_mini_headings" id="lunch_timings_text"></p>
+                    <p id="lunch_timings"></p>
+                </div>
+            </div>
+            <div>
+                <p class="p_mini_headings" id="p_hostlist_text">Hosts</p>
+                <p id="p_hostlist">Venkata Reddy Pulagam, Vijaya Lakshmi Pulagam, Venkata Siva Prasad Reddy Pulagam, Joshna Pulagam</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Settings Button -->
+    <button class="settings-btn" id="settings-btn">⚙️</button>
+
+    <!-- Settings Panel -->
+    <div class="settings-panel" id="settings-panel">
+        <button class="close-btn" id="close-btn">&times;</button>
+        <h2>Preferences</h2>
+        <label for="language-select">Language:</label>
+        <select id="language-select">
+            <option value="en-us">English (US)</option>
+            <option value="en-uk">English (UK)</option>
+            <option value="de">German</option>
+            <option value="te">Telugu</option>
+            <option value="hi">Hindi</option>
+        </select>
+        <!-- <br><br>
+        <label for="theme-toggle">Theme:</label>
+        <button id="theme-toggle">Toggle Dark/Light Mode</button> -->
+    </div>
+
+    <!-- Link to the external JavaScript file -->
+    <script src="script.js"></script>
+</body>
+
+</html>

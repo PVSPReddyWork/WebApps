@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Adjuster</title>
+</head>
+<body>
+    <h1>SVG Adjuster</h1>
+    <input type="file" id="svgFileInput" accept=".svg">
+    <button onclick="adjustSVG()">Adjust SVG</button>
+    <div id="svgContainer"></div>
+    <button id="downloadBtn" style="display: none;">Download Updated SVG</button>
+
+    <script>
+        let svgElement;
+
+        document.getElementById('svgFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, "image/svg+xml");
+                svgElement = doc.documentElement;
+            };
+            reader.readAsText(file);
+        });
+
+        function adjustSVG() {
+            if (!svgElement) {
+                alert("Please upload an SVG file first.");
+                return;
+            }
+
+            // Create a temporary SVG container to get bounding box
+            const tempSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            tempSVG.setAttribute("width", "100%");
+            tempSVG.setAttribute("height", "100%");
+            tempSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+            tempSVG.innerHTML = svgElement.innerHTML;
+            document.body.appendChild(tempSVG);
+
+            // Calculate bounding box of all elements
+            const bbox = tempSVG.getBBox();
+            document.body.removeChild(tempSVG);
+
+            // Calculate translation needed
+            const translateX = -bbox.x;
+            const translateY = -bbox.y;
+
+            // Adjust all elements' positions
+            const elements = svgElement.querySelectorAll('*');
+            elements.forEach(element => {
+                adjustElementAttributes(element, translateX, translateY);
+            });
+
+            // Set new SVG dimensions and viewBox
+            const newWidth = 100; // New width
+            const newHeight = 300; // New height
+            const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            newSVG.setAttribute("width", newWidth);
+            newSVG.setAttribute("height", newHeight);
+            newSVG.setAttribute("viewBox", `0 0 ${newWidth} ${newHeight}`);
+            newSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+            // Append the adjusted elements to the new SVG
+            const adjustedSVGContent = svgElement.innerHTML;
+            newSVG.innerHTML = adjustedSVGContent;
+
+            // Display the updated SVG
+            const svgContainer = document.getElementById('svgContainer');
+            svgContainer.innerHTML = '';  // Clear previous SVG
+            svgContainer.appendChild(newSVG);
+
+            // Show the download button
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline';
+            downloadBtn.onclick = function() {
+                downloadSVG(newSVG);
+            };
+        }
+
+        function adjustElementAttributes(element, translateX, translateY) {
+            switch (element.tagName) {
+                case 'path':
+                    const pathData = element.getAttribute('d');
+                    element.setAttribute('d', adjustPathData(pathData, translateX, translateY));
+                    break;
+                case 'rect':
+                    adjustRectAttributes(element, translateX, translateY);
+                    break;
+                case 'circle':
+                case 'ellipse':
+                    adjustCircleAttributes(element, translateX, translateY);
+                    break;
+                case 'line':
+                    adjustLineAttributes(element, translateX, translateY);
+                    break;
+                case 'polygon':
+                case 'polyline':
+                    adjustPolygonAttributes(element, translateX, translateY);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        function adjustPathData(d, translateX, translateY) {
+            return d.replace(/([MLC][^MLC]*)/g, (match) => {
+                return match.split(/([MLC])/).map((val, i) => {
+                    if (i % 2 === 1) {
+                        return val;
+                    }
+                    return (parseFloat(val) + translateX).toFixed(2);
+                }).join('');
+            }).replace(/([MLC])([^\s,]+) ([^\s,]+)/g, (match, cmd, x, y) => {
+                return `${cmd}${(parseFloat(x) + translateX).toFixed(2)} ${(parseFloat(y) + translateY).toFixed(2)}`;
+            });
+        }
+
+        function adjustRectAttributes(rect, translateX, translateY) {
+            rect.setAttribute('x', (parseFloat(rect.getAttribute('x')) + translateX).toFixed(2));
+            rect.setAttribute('y', (parseFloat(rect.getAttribute('y')) + translateY).toFixed(2));
+        }
+
+        function adjustCircleAttributes(circle, translateX, translateY) {
+            circle.setAttribute('cx', (parseFloat(circle.getAttribute('cx')) + translateX).toFixed(2));
+            circle.setAttribute('cy', (parseFloat(circle.getAttribute('cy')) + translateY).toFixed(2));
+        }
+
+        function adjustLineAttributes(line, translateX, translateY) {
+            line.setAttribute('x1', (parseFloat(line.getAttribute('x1')) + translateX).toFixed(2));
+            line.setAttribute('y1', (parseFloat(line.getAttribute('y1')) + translateY).toFixed(2));
+            line.setAttribute('x2', (parseFloat(line.getAttribute('x2')) + translateX).toFixed(2));
+            line.setAttribute('y2', (parseFloat(line.getAttribute('y2')) + translateY).toFixed(2));
+        }
+
+        function adjustPolygonAttributes(polygon, translateX, translateY) {
+            const points = polygon.getAttribute('points').split(' ').map(point => {
+                const [x, y] = point.split(',').map(Number);
+                return `${(x + translateX).toFixed(2)},${(y + translateY).toFixed(2)}`;
+            }).join(' ');
+            polygon.setAttribute('points', points);
+        }
+
+        function downloadSVG(svg) {
+            const serializer = new XMLSerializer();
+            const source = serializer.serializeToString(svg);
+
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'adjusted_image.svg';
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Adjuster</title>
+</head>
+<body>
+    <h1>SVG Adjuster</h1>
+    <input type="file" id="svgFileInput" accept=".svg">
+    <button onclick="adjustSVG()">Adjust SVG</button>
+    <div id="svgContainer"></div>
+    <button id="downloadBtn" style="display: none;">Download Updated SVG</button>
+
+    <script>
+        let svgElement;
+
+        document.getElementById('svgFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, "image/svg+xml");
+                svgElement = doc.documentElement;
+            };
+            reader.readAsText(file);
+        });
+
+        function adjustSVG() {
+            if (!svgElement) {
+                alert("Please upload an SVG file first.");
+                return;
+            }
+
+            // Find the bounding box of all elements
+            const bbox = svgElement.getBBox();
+
+            // Calculate the translation needed to move the image to (0,0)
+            const translateX = -bbox.x;
+            const translateY = -bbox.y;
+
+            // Adjust all elements' positions
+            const elements = svgElement.querySelectorAll('*');
+            elements.forEach(element => {
+                adjustElementAttributes(element, translateX, translateY);
+            });
+
+            // Set new SVG dimensions and viewBox
+            const newWidth = 100; // New width
+            const newHeight = 300; // New height
+            const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            newSVG.setAttribute("width", newWidth);
+            newSVG.setAttribute("height", newHeight);
+            newSVG.setAttribute("viewBox", `0 0 ${newWidth} ${newHeight}`);
+            newSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+            // Append the adjusted elements to the new SVG
+            elements.forEach(element => newSVG.appendChild(element.cloneNode(true)));
+
+            // Display the updated SVG
+            const svgContainer = document.getElementById('svgContainer');
+            svgContainer.innerHTML = '';  // Clear previous SVG
+            svgContainer.appendChild(newSVG);
+
+            // Show the download button
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline';
+            downloadBtn.onclick = function() {
+                downloadSVG(newSVG);
+            };
+        }
+
+        function adjustElementAttributes(element, translateX, translateY) {
+            // Adjust attributes based on element type
+            switch (element.tagName) {
+                case 'path':
+                    const pathData = element.getAttribute('d');
+                    element.setAttribute('d', adjustPathData(pathData, translateX, translateY));
+                    break;
+                case 'rect':
+                    adjustRectAttributes(element, translateX, translateY);
+                    break;
+                case 'circle':
+                case 'ellipse':
+                    adjustCircleAttributes(element, translateX, translateY);
+                    break;
+                case 'line':
+                    adjustLineAttributes(element, translateX, translateY);
+                    break;
+                case 'polygon':
+                case 'polyline':
+                    adjustPolygonAttributes(element, translateX, translateY);
+                    break;
+                default:
+                    // Handle other elements if necessary
+                    break;
+            }
+        }
+
+        function adjustPathData(d, translateX, translateY) {
+            return d.replace(/([MLC])[^\s,]+/g, (match) => {
+                // Adjust the numbers in path data
+                return match.split(/([MLC])/).map((val, i) => {
+                    if (i % 2 === 1) { // For commands
+                        return val;
+                    }
+                    return (parseFloat(val) + translateX).toFixed(2);
+                }).join('');
+            }).replace(/([MLC])([^\s,]+) ([^\s,]+)/g, (match, cmd, x, y) => {
+                // Adjust the numbers in path data
+                return `${cmd}${(parseFloat(x) + translateX).toFixed(2)} ${(parseFloat(y) + translateY).toFixed(2)}`;
+            });
+        }
+
+        function adjustRectAttributes(rect, translateX, translateY) {
+            rect.setAttribute('x', (parseFloat(rect.getAttribute('x')) + translateX).toFixed(2));
+            rect.setAttribute('y', (parseFloat(rect.getAttribute('y')) + translateY).toFixed(2));
+        }
+
+        function adjustCircleAttributes(circle, translateX, translateY) {
+            circle.setAttribute('cx', (parseFloat(circle.getAttribute('cx')) + translateX).toFixed(2));
+            circle.setAttribute('cy', (parseFloat(circle.getAttribute('cy')) + translateY).toFixed(2));
+        }
+
+        function adjustLineAttributes(line, translateX, translateY) {
+            line.setAttribute('x1', (parseFloat(line.getAttribute('x1')) + translateX).toFixed(2));
+            line.setAttribute('y1', (parseFloat(line.getAttribute('y1')) + translateY).toFixed(2));
+            line.setAttribute('x2', (parseFloat(line.getAttribute('x2')) + translateX).toFixed(2));
+            line.setAttribute('y2', (parseFloat(line.getAttribute('y2')) + translateY).toFixed(2));
+        }
+
+        function adjustPolygonAttributes(polygon, translateX, translateY) {
+            const points = polygon.getAttribute('points').split(' ').map(point => {
+                const [x, y] = point.split(',').map(Number);
+                return `${(x + translateX).toFixed(2)},${(y + translateY).toFixed(2)}`;
+            }).join(' ');
+            polygon.setAttribute('points', points);
+        }
+
+        function downloadSVG(svg) {
+            const serializer = new XMLSerializer();
+            const source = serializer.serializeToString(svg);
+
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'adjusted_image.svg';
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Adjuster</title>
+</head>
+<body>
+    <h1>SVG Adjuster</h1>
+    <input type="file" id="svgFileInput" accept=".svg">
+    <button onclick="adjustSVG()">Adjust SVG</button>
+    <div id="svgContainer"></div>
+    <button id="downloadBtn" style="display: none;">Download Updated SVG</button>
+
+    <script>
+        let svgElement;
+
+        document.getElementById('svgFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, "image/svg+xml");
+                svgElement = doc.documentElement;
+            };
+            reader.readAsText(file);
+        });
+
+        function adjustSVG() {
+            if (!svgElement) {
+                alert("Please upload an SVG file first.");
+                return;
+            }
+
+            // Find the bounding box of all elements
+            const bbox = svgElement.getBBox();
+
+            // Calculate the translation needed to move the image to (0,0)
+            const translateX = -bbox.x;
+            const translateY = -bbox.y;
+
+            // Adjust all elements' positions
+            const elements = svgElement.querySelectorAll('*');
+            elements.forEach(element => {
+                const x = parseFloat(element.getAttribute('x')) || 0;
+                const y = parseFloat(element.getAttribute('y')) || 0;
+
+                element.setAttribute('x', x + translateX);
+                element.setAttribute('y', y + translateY);
+            });
+
+            // Set new SVG dimensions and viewBox
+            const newWidth = 100; // New width
+            const newHeight = 300; // New height
+            const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            newSVG.setAttribute("width", newWidth);
+            newSVG.setAttribute("height", newHeight);
+            newSVG.setAttribute("viewBox", `0 0 ${newWidth} ${newHeight}`);
+            newSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+            // Append the adjusted elements to the new SVG
+            elements.forEach(element => newSVG.appendChild(element.cloneNode(true)));
+
+            // Display the updated SVG
+            const svgContainer = document.getElementById('svgContainer');
+            svgContainer.innerHTML = '';  // Clear previous SVG
+            svgContainer.appendChild(newSVG);
+
+            // Show the download button
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline';
+            downloadBtn.onclick = function() {
+                downloadSVG(newSVG);
+            };
+        }
+
+        function downloadSVG(svg) {
+            const serializer = new XMLSerializer();
+            const source = serializer.serializeToString(svg);
+
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'adjusted_image.svg';
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html> -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Adjuster</title>
+</head>
+<body>
+    <h1>SVG Adjuster</h1>
+    <input type="file" id="svgFileInput" accept=".svg">
+    <br>
+    <label for="desiredX">Desired Lowest X:</label>
+    <input type="number" id="desiredX" value="0">
+    <br>
+    <label for="desiredY">Desired Lowest Y:</label>
+    <input type="number" id="desiredY" value="0">
+    <br>
+    <button onclick="adjustSVG()">Adjust SVG</button>
+    <div id="svgContainer"></div>
+    <button id="downloadBtn" style="display: none;">Download Updated SVG</button>
+
+    <script>
+        let svgElement;
+
+        document.getElementById('svgFileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(e.target.result, "image/svg+xml");
+                svgElement = doc.documentElement;
+            };
+            reader.readAsText(file);
+        });
+
+        function adjustSVG() {
+            if (!svgElement) {
+                alert("Please upload an SVG file first.");
+                return;
+            }
+
+            // Find the lowest x and y values in the SVG elements
+            let lowestX = Infinity;
+            let lowestY = Infinity;
+
+            // Collect all the elements with x and y attributes
+            const elements = svgElement.querySelectorAll('*');
+
+            elements.forEach(element => {
+                const x = parseFloat(element.getAttribute('x')) || 0;
+                const y = parseFloat(element.getAttribute('y')) || 0;
+                
+                if (x < lowestX) lowestX = x;
+                if (y < lowestY) lowestY = y;
+            });
+
+            // Get the desired lowest x and y values from the user
+            const desiredX = parseFloat(document.getElementById('desiredX').value);
+            const desiredY = parseFloat(document.getElementById('desiredY').value);
+
+            // Calculate the difference between the current and desired lowest x and y values
+            const deltaX = desiredX - lowestX;
+            const deltaY = desiredY - lowestY;
+
+            // Adjust all x and y values
+            elements.forEach(element => {
+                const x = parseFloat(element.getAttribute('x')) || 0;
+                const y = parseFloat(element.getAttribute('y')) || 0;
+                
+                element.setAttribute('x', x + deltaX);
+                element.setAttribute('y', y + deltaY);
+            });
+
+            // Calculate the new dimensions of the SVG
+            const bbox = svgElement.getBBox();
+            const newWidth = bbox.width + 40;  // Adding 20px padding on each side
+            const newHeight = bbox.height + 40;
+
+            // Create a new SVG element with adjusted dimensions and padding
+            const newSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+            newSVG.setAttribute("width", newWidth);
+            newSVG.setAttribute("height", newHeight);
+            newSVG.setAttribute("viewBox", `${bbox.x - 20} ${bbox.y - 20} ${newWidth} ${newHeight}`);
+            newSVG.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+
+            // Append the adjusted elements to the new SVG
+            elements.forEach(element => newSVG.appendChild(element.cloneNode(true)));
+
+            // Display the updated SVG
+            const svgContainer = document.getElementById('svgContainer');
+            svgContainer.innerHTML = '';  // Clear previous SVG
+            svgContainer.appendChild(newSVG);
+
+            // Show the download button
+            const downloadBtn = document.getElementById('downloadBtn');
+            downloadBtn.style.display = 'inline';
+            downloadBtn.onclick = function() {
+                downloadSVG(newSVG);
+            };
+        }
+
+        function downloadSVG(svg) {
+            const serializer = new XMLSerializer();
+            const source = serializer.serializeToString(svg);
+
+            const blob = new Blob([source], { type: 'image/svg+xml;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'updated_image.svg';
+            link.click();
+
+            URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html> -->
+<!-- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG Adjuster</title>
+</head>
+<body>
+    <h1>SVG Adjuster</h1>
+    <input type="file" id="svgUpload" accept=".svg"><br><br>
+    <label for="newX">Enter new lowest X:</label>
+    <input type="number" id="newX"><br><br>
+    <label for="newY">Enter new lowest Y:</label>
+    <input type="number" id="newY"><br><br>
+    <button onclick="adjustSVG()">Adjust SVG</button>
+    <div id="svgContainer"></div>
+</body>
+<script>
+    let svgElement;
+
+    document.getElementById('svgUpload').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(e.target.result, "image/svg+xml");
+            svgElement = doc.documentElement;
+            document.getElementById('svgContainer').innerHTML = '';
+            document.getElementById('svgContainer').appendChild(svgElement);
+        };
+        reader.readAsText(file);
+    });
+
+    function adjustSVG() {
+        if (!svgElement) {
+            alert('Please upload an SVG image first.');
+            return;
+        }
+
+        let lowestX = Infinity;
+        let lowestY = Infinity;
+
+        const elements = svgElement.querySelectorAll('*');
+        elements.forEach(el => {
+            const x = parseFloat(el.getAttribute('x')) || 0;
+            const y = parseFloat(el.getAttribute('y')) || 0;
+
+            if (x < lowestX) lowestX = x;
+            if (y < lowestY) lowestY = y;
+        });
+
+        const newX = parseFloat(document.getElementById('newX').value) || 0;
+        const newY = parseFloat(document.getElementById('newY').value) || 0;
+
+        const deltaX = newX - lowestX;
+        const deltaY = newY - lowestY;
+
+        elements.forEach(el => {
+            const x = parseFloat(el.getAttribute('x')) || 0;
+            const y = parseFloat(el.getAttribute('y')) || 0;
+
+            el.setAttribute('x', x + deltaX);
+            el.setAttribute('y', y + deltaY);
+        });
+
+        alert('SVG has been adjusted.');
+    }
+</script>
+</html> -->

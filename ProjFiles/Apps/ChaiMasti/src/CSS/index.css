@@ -1,0 +1,53 @@
+.introPageHolder {
+    display: flex;
+    /* flex-direction: column; */
+    position: relative;
+    overflow: scroll;
+    flex: 1;
+  }
+  .mainContentHolder {
+    display: flex;
+    flex-direction: row;
+    flex: 1;
+  }
+  
+  .leftContentHolder {
+    flex: 1;
+    overflow-y: scroll;
+    height: 100%;
+    /* scrollbar-width: none; */
+    /* Hide scrollbar for IE, Edge and Firefox */
+    /*-ms-overflow-style: none; /* IE and Edge */
+    /*scrollbar-width: none; /* Firefox */
+  }
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .leftContentHolder::-webkit-scrollbar,
+  .introPageHolder::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .imageHolder {
+    height: 50%;
+    display: flex;
+    justify-content: center;
+    align-content: center;
+    /* width: 50%; */
+    opacity: 28%;
+  }
+  
+  .rightContentHolder {
+    display: flex;
+    justify-content: center;
+    align-content: center;
+  }
+  
+  .loginPopupHolder {
+    position: absolute;
+    background-color: green;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    justify-content: center;
+    align-content: center;
+    visibility: hidden;
+  }

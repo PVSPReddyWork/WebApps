@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emoji QR Code Generator</title>
+</head>
+<body>
+    <h1>Emoji QR Code Generator</h1>
+    <input type="text" id="urls" placeholder="Enter URLs separated by commas">
+    <button onclick="generateEmojiQRCodes()">Generate QR Codes</button>
+    <div id="qrContainer"></div>
+</body>
+<script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+<script>
+    function generateEmojiQRCodes() {
+        const container = document.getElementById('qrContainer');
+        container.innerHTML = '';  // Clear previous QR codes
+        const urls = document.getElementById('urls').value.split(',');
+
+        urls.forEach((url) => {
+            const title = url.trim().replace(/https?:\/\//, '').replace(/[^a-zA-Z0-9]/g, '_');
+            const div = document.createElement('div');
+            div.style.textAlign = 'center';
+            div.style.marginBottom = '20px';
+
+            const qr = new QRCode(document.createElement('div'), {
+                text: url.trim(),
+                width: 200,
+                height: 200,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            const canvas = convertToEmojiQRCode(qr._oDrawing._elCanvas);
+            const img = new Image();
+            img.src = canvas.toDataURL();
+
+            div.appendChild(img);
+
+            const titleElement = document.createElement('div');
+            titleElement.innerText = title;
+            titleElement.style.marginTop = '10px';
+
+            const downloadButton = document.createElement('button');
+            downloadButton.innerText = 'Download';
+            downloadButton.onclick = function() {
+                downloadEmojiQRCode(canvas, title);
+            };
+
+            div.appendChild(titleElement);
+            div.appendChild(downloadButton);
+            container.appendChild(div);
+        });
+    }
+
+    function convertToEmojiQRCode(canvas) {
+        const ctx = canvas.getContext('2d');
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        // Create a new canvas for the emoji QR code
+        const emojiCanvas = document.createElement('canvas');
+        emojiCanvas.width = canvas.width;
+        emojiCanvas.height = canvas.height;
+        const emojiCtx = emojiCanvas.getContext('2d');
+        emojiCtx.clearRect(0, 0, emojiCanvas.width, emojiCanvas.height);
+
+        // Define emojis for "on" and "off" states
+        const onEmoji = '🟩'; // Green square emoji
+        const offEmoji = '⬜'; // White square emoji
+
+        const fontSize = 10;  // Size of the emojis in pixels
+        emojiCtx.font = `${fontSize}px Arial`;
+
+        for (let y = 0; y < canvas.height; y += fontSize) {
+            for (let x = 0; x < canvas.width; x += fontSize) {
+                const pixelIndex = (y * canvas.width + x) * 4;
+                const [r, g, b] = [data[pixelIndex], data[pixelIndex + 1], data[pixelIndex + 2]];
+                const isDark = r < 128 && g < 128 && b < 128;
+                const emoji = isDark ? onEmoji : offEmoji;
+                emojiCtx.fillText(emoji, x, y + fontSize - 2);
+            }
+        }
+
+        return emojiCanvas;
+    }
+
+    function downloadEmojiQRCode(canvas, title) {
+        const link = document.createElement('a');
+        link.download = `${title}.png`;
+        link.href = canvas.toDataURL();
+        link.click();
+    }
+</script>
+</html>

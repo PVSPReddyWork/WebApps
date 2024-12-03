@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animated Balloons</title>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            /* Prevent scrollbars */
+        }
+
+        .side {
+            position: fixed;
+            top: 0;
+            width: 60px;
+            /* Adjust size of balloons */
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            /* Prevent overflow of balloons */
+        }
+
+        .side svg {
+            width: 100%;
+            height: auto;
+        }
+
+        .left {
+            left: 0;
+        }
+
+        .right {
+            right: 0;
+        }
+
+        /* Keyframes for balloon flying animation */
+        @keyframes fly {
+            from {
+                transform: translateY(-0%);
+                /* Start from bottom */
+            }
+            to {
+                transform: translateY(-100%);
+                /* End at top */
+            }
+        }
+
+        @keyframes swing {
+            0% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+            100% { transform: rotate(-5deg); }
+        }
+        ellipse {
+            transform-origin: center;
+            animation: swing 1s infinite ease-in-out;
+        }
+
+        /* Balloons are animated from bottom to top */
+        .balloon-container {
+            position: relative;
+            /* Position relative for absolute children */
+            width: 60px;
+            /* Width of balloons */
+            height: 100%;
+            /* Full height of the container */
+            overflow: hidden;
+            /* Hide overflow to keep container clean */
+        }
+
+        .balloon {
+            position: absolute;
+            width: 60px;
+            /* Balloon width */
+            height: auto;
+            animation: fly 2s linear infinite;
+            /* Adjust duration for desired speed */
+            bottom: 0;
+            /* Start from the bottom of the container */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="side left" id="leftSide">
+        <div class="balloon-container" id="balloonContainerLeft"></div>
+    </div>
+    <div class="side right" id="rightSide">
+        <div class="balloon-container" id="balloonContainerRight"></div>
+    </div>
+
+    <script>
+
+        function createBalloons(side, numBalloons) {//createSVGBaloon(){
+            const container = document.getElementById(`balloonContainer${side}`);
+            const height = container.clientHeight;
+            const balloonHeight = 100; // Adjust based on actual balloon height
+            for (let i = 0; i < numBalloons; i++) {
+                //main svg layout
+                const balloon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                balloon.classList.add('balloon');
+                //balloon.width = 50;//"50px";
+                //balloon.height = 100;//"100px";
+                //balloon.setAttribute("width", "50");
+                //balloon.setAttribute("height", "100");
+                balloon.setAttribute("viewBox", "0,0,50,100");
+
+                //balloon component
+                const balloonSymbol = document.createElementNS("http://www.w3.org/2000/svg", "symbol");
+                balloonSymbol.setAttribute("id", "balloon");
+                balloonSymbol.setAttribute("viewBox", "0 0 50 100");
+
+                // Balloon Shape
+                const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                ellipse.setAttribute("cx", "25");
+                ellipse.setAttribute("cy", "35");
+                ellipse.setAttribute("rx", "23");
+                ellipse.setAttribute("ry", "34");
+                ellipse.setAttribute("fill", `hsl(${Math.random() * 360}, 70%, 70%)`);
+                ellipse.setAttribute("stroke", "black");
+                ellipse.setAttribute("stroke-width", "2");
+                balloonSymbol.appendChild(ellipse);
+
+                // Balloon Highlight
+                const highlight = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                highlight.setAttribute("cx", "15");
+                highlight.setAttribute("cy", "30");
+                highlight.setAttribute("rx", "5");
+                highlight.setAttribute("ry", "10");
+                highlight.setAttribute("fill", "white");
+                highlight.setAttribute("opacity", "0.3");
+                balloonSymbol.appendChild(highlight);
+
+                // Balloon Threads
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", "25");
+                line.setAttribute("y1", "70");
+                line.setAttribute("x2", "26");
+                line.setAttribute("y2", "100");
+                line.setAttribute("stroke", "black");
+                line.setAttribute("stroke-width", "2");
+                balloonSymbol.appendChild(line);
+
+                balloon.appendChild(balloonSymbol);
+
+                const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+                use.setAttributeNS(null, "href", "#balloon");
+                use.setAttributeNS(null, "x", "0");
+                use.setAttributeNS(null, "y", "0");
+                //use.setAttributeNS(null, "fill", `hsl(${Math.random() * 360}, 70%, 70%)`); // Random color
+                balloon.appendChild(use);
+
+                // Position balloons
+                balloon.style.bottom = `${i * (balloonHeight / numBalloons)}px`;
+                container.appendChild(balloon);
+            }
+        }
+
+        // Function to create and animate balloons
+        function createBalloons1(side, numBalloons) {
+            const container = document.getElementById(`balloonContainer${side}`);
+            const height = container.clientHeight;
+            const balloonHeight = 90; // Adjust based on actual balloon height
+
+            for (let i = 0; i < numBalloons; i++) {
+                const balloon = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+                balloon.classList.add('balloon');
+                balloon.setAttribute("viewBox", "0 0 60 90");
+
+                const balloonSymbol = document.createElementNS("http://www.w3.org/2000/svg", "symbol");
+                balloonSymbol.setAttribute("id", "balloon");
+                balloonSymbol.setAttribute("viewBox", "0 0 40 60");
+
+                // Balloon Shape
+                const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                ellipse.setAttribute("cx", "20");
+                ellipse.setAttribute("cy", "20");
+                ellipse.setAttribute("rx", "15");
+                ellipse.setAttribute("ry", "30");
+                ellipse.setAttribute("fill", "red");
+                ellipse.setAttribute("stroke", "black");
+                ellipse.setAttribute("stroke-width", "2");
+                balloonSymbol.appendChild(ellipse);
+
+                // Balloon Highlight
+                const highlight = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+                highlight.setAttribute("cx", "10");
+                highlight.setAttribute("cy", "10");
+                highlight.setAttribute("rx", "7");
+                highlight.setAttribute("ry", "15");
+                highlight.setAttribute("fill", "white");
+                highlight.setAttribute("opacity", "0.3");
+                balloonSymbol.appendChild(highlight);
+
+                // Balloon Threads
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute("x1", "20");
+                line.setAttribute("y1", "45");
+                line.setAttribute("x2", "20");
+                line.setAttribute("y2", "60");
+                line.setAttribute("stroke", "black");
+                line.setAttribute("stroke-width", "2");
+                balloonSymbol.appendChild(line);
+
+                balloon.appendChild(balloonSymbol);
+
+                const use = document.createElementNS("http://www.w3.org/2000/svg", "use");
+                use.setAttributeNS(null, "href", "#balloon");
+                use.setAttributeNS(null, "x", "0");
+                use.setAttributeNS(null, "y", "0");
+                use.setAttributeNS(null, "fill", `hsl(${Math.random() * 360}, 70%, 70%)`); // Random color
+                balloon.appendChild(use);
+
+                // Position balloons
+                balloon.style.bottom = `${i * (balloonHeight / numBalloons)}px`;
+                container.appendChild(balloon);
+            }
+        }
+
+        // Function to adjust the number of balloons based on screen size
+        function adjustBalloons() {
+            const isMobile = window.innerWidth <= 768; // Adjust breakpoint for mobile
+            const numBalloons = isMobile ? 1 : 3;
+            document.querySelectorAll('.balloon').forEach(b => b.remove()); // Remove existing balloons
+            createBalloons('Left', numBalloons);
+            createBalloons('Right', numBalloons);
+        }
+
+        // Initialize and adjust balloons on load and resize
+        window.addEventListener('load', adjustBalloons);
+        window.addEventListener('resize', adjustBalloons);
+    </script>
+</body>
+
+</html>

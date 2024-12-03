@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 10px 0;
+        }
+        a {
+            text-decoration: none;
+            color: white;
+            background-color: #007BFF;
+            padding: 10px 15px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        a:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Project Dashboard</h1>
+    <ul id="project-list">
+        <!-- Dynamic project links will be added here -->
+    </ul>
+
+    <script>
+        // Define the apps directory and fetch its contents dynamically
+        const appsDir = './ProjFiles/Apps/';//E:\Projects\WebPages\PVSPReddy\ProjFiles\Apps
+        const projectList = document.getElementById('project-list');
+
+        // This will simulate fetching project directories
+        const projectFolders = ['ChaiMasti', 'ImageEditor', 'QRGenerator', 'Shop', 'WebPageInvitation', 'Designs', 'PCBDesigner' ]; // Replace with actual dynamic fetch
+
+        projectFolders.forEach(folder => {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `${appsDir}${folder}/index.html`; // Path to each project's main file
+            link.textContent = folder; // Use folder name as link text
+            link.target = '_self'; // Open in the same window
+            listItem.appendChild(link);
+            projectList.appendChild(listItem);
+        });
+    </script>
+</body>
+</html>

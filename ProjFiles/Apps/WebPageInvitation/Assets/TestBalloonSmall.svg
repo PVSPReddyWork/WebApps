@@ -1,0 +1,122 @@
+<svg width="50" height="100" viewBox="0,0,50,100" xmlns="http://www.w3.org/2000/svg">
+  <!-- Balloon Shape -->
+  <ellipse cx="25" cy="35" rx="23" ry="34" fill="red" stroke="black" stroke-width="2"/>
+  <!-- Balloon Highlight -->
+  <ellipse cx="15" cy="30" rx="5" ry="10" fill="white" opacity="0.3"/>
+  <!-- Balloon Threads -->
+  <line x1="25" y1="70" x2="26" y2="100" stroke="black" stroke-width="2"/>
+  <!-- <line x1="120" y1="170" x2="120" y2="250" stroke="black" stroke-width="2"/> -->
+  <!-- Balloon Animation -->
+  <style>
+    @keyframes swing {
+      0% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(-5deg); }
+    }
+    ellipse {
+      transform-origin: center;
+      animation: swing 3s infinite ease-in-out;
+    }
+  </style>
+</svg>
+
+<svg width="400" height="400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Define the Balloon Component -->
+  <defs>
+    <defs>
+    <symbol id="balloon" width="50" height="100" viewBox="0,0,50,100">
+      <!-- Balloon Shape -->
+  <ellipse cx="25" cy="35" rx="23" ry="34" fill="red" stroke="black" stroke-width="2"/>
+  <!-- Balloon Highlight -->
+  <ellipse cx="15" cy="30" rx="5" ry="10" fill="white" opacity="0.3"/>
+  <!-- Balloon Threads -->
+  <line x1="25" y1="70" x2="26" y2="100" stroke="black" stroke-width="2"/>
+  <!-- <line x1="120" y1="170" x2="120" y2="250" stroke="black" stroke-width="2"/> -->
+  <!-- Balloon Animation -->
+  <style>
+    @keyframes swing {
+      0% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(-5deg); }
+    }
+    ellipse {
+      transform-origin: center;
+      animation: swing 3s infinite ease-in-out;
+    }
+  </style>
+    </symbol>
+  </defs>
+    <symbol id="balloon_yellow" width="50" height="100" viewBox="0,0,50,100">
+      <!-- Balloon Shape -->
+  <ellipse cx="25" cy="35" rx="23" ry="34" fill="yellow" stroke="black" stroke-width="2"/>
+  <!-- Balloon Highlight -->
+  <ellipse cx="15" cy="30" rx="5" ry="10" fill="white" opacity="0.3"/>
+  <!-- Balloon Threads -->
+  <line x1="25" y1="70" x2="26" y2="100" stroke="black" stroke-width="2"/>
+  <!-- <line x1="120" y1="170" x2="120" y2="250" stroke="black" stroke-width="2"/> -->
+  <!-- Balloon Animation -->
+  <style>
+    @keyframes swing {
+      0% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(-5deg); }
+    }
+    ellipse {
+      transform-origin: center;
+      animation: swing 3s infinite ease-in-out;
+    }
+  </style>
+    </symbol>
+  </defs>
+  <defs>
+    <symbol id="balloon_green" width="50" height="100" viewBox="0,0,50,100">
+      <!-- Balloon Shape -->
+  <ellipse cx="25" cy="35" rx="23" ry="34" fill="green" stroke="black" stroke-width="2"/>
+  <!-- Balloon Highlight -->
+  <ellipse cx="15" cy="30" rx="5" ry="10" fill="white" opacity="0.3"/>
+  <!-- Balloon Threads -->
+  <line x1="25" y1="70" x2="26" y2="100" stroke="black" stroke-width="2"/>
+  <!-- <line x1="120" y1="170" x2="120" y2="250" stroke="black" stroke-width="2"/> -->
+  <!-- Balloon Animation -->
+  <style>
+    @keyframes swing {
+      0% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(-5deg); }
+    }
+    ellipse {
+      transform-origin: center;
+      animation: swing 3s infinite ease-in-out;
+    }
+  </style>
+    </symbol>
+  </defs>
+  <defs>
+    <symbol id="balloon_blue" width="50" height="100" viewBox="0,0,50,100">
+      <!-- Balloon Shape -->
+  <ellipse cx="25" cy="35" rx="23" ry="34" fill="blue" stroke="black" stroke-width="2"/>
+  <!-- Balloon Highlight -->
+  <ellipse cx="15" cy="30" rx="5" ry="10" fill="white" opacity="0.3"/>
+  <!-- Balloon Threads -->
+  <line x1="25" y1="70" x2="26" y2="100" stroke="black" stroke-width="2"/>
+  <!-- <line x1="120" y1="170" x2="120" y2="250" stroke="black" stroke-width="2"/> -->
+  <!-- Balloon Animation -->
+  <style>
+    @keyframes swing {
+      0% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+      100% { transform: rotate(-5deg); }
+    }
+    ellipse {
+      transform-origin: center;
+      animation: swing 3s infinite ease-in-out;
+    }
+  </style>
+    </symbol>
+  </defs>
+
+  <!-- Use the Balloon Component with different positions and colors -->
+  <use href="#balloon" x="50" y="50" fill="green"/>
+  <use href="#balloon_green" x="200" y="100" fill="green"/>
+  <use href="#balloon_yellow" x="100" y="250" fill="yellow"/>
+</svg>

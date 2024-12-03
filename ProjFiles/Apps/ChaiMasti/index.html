@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+  <head>
+<!-- <?!= include('Index.css'); ?> -->
+  </head>
+  <body>
+<div class="introPageHolder">
+      <div class="mainContentHolder">
+        <div class="leftContentHolder">
+          <div class="imageHolder">
+            <!-- <img src={BUDGET_PLANNER_LOGO} /> -->
+          </div>
+          <p>
+            This is a Private website focusing on the admins daily expenditure,
+            This website records the expenditure and save to the google sheets
+            and displays the same by retriving the data from the sheets. For now
+            this cannot be used by any other individual as the access is
+            restricted to the particular user alone. Thank you.
+          </p>
+        </div>
+        <div class="rightContentHolder">
+            <button id="btn_logout" onClick="onLogoutClicked()">
+              Logout
+            </button>
+            <button id="btn_login" onClick="onLoginClicked()">
+              Login
+            </button>
+        </div>
+      </div>
+        <div id="loginPopupHolder" class="loginPopupHolder">
+          <div class="loginMainHolderClassName">
+      <div>
+        <div key="USER_EMAIL">
+            <input
+              type="text"
+              id="USER_EMAIL"
+              onChange="onTextChanged(this)"
+              placeholder="Enter User Email"
+            />
+          </div>
+          <div key="USER_PASSWORD">
+            <input
+              type="password"
+              id="USER_PASSWORD"
+              onChange="onTextChanged(this)"
+              placeholder="Enter User Password"
+            />
+          </div>
+        <button onClick="onLoginButtonClick(this)">Login</button>
+      </div>
+      
+        <!-- <div class="addLoginLoaderHolder">
+          <p>Loading... Please Wait</p>
+        </div> -->
+    </div>
+          <button onClick="onLoginCompleted(false)">close</button>
+        </div>
+    </div>
+<!-- <?!= include('CommonFunctions.js'); ?>
+<?!= include('Index.js'); ?> -->
+  <script>
+    </script>
+  </body>
+</html>

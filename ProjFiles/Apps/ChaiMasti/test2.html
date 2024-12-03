@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Joystick Controls</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <style>
+        html,
+        body {
+            background-color: #90E4C1;
+            align-items: center;
+            text-align: center;
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CSS for rotating the page */
+        .rotate {
+            /* transform: rotate(90deg); * /
+            transform-origin: center;
+            display: flex;
+            height: 100%;
+            overflow-x: scroll;
+            /* position: absolute; * /
+            /* top: 50%; * /
+            left: 50%;
+            transform: rotate(90deg);
+            width: 100%;
+            */
+        }
+
+        p {
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .bodyHolderDiv {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            margin: 0px;
+            padding: 0px;
+            width: 100%;
+            height: 100%;
+        }
+
+        #mainHolderDiv {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .control-bar {
+            position: relative;
+            background-color: #ddd;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .horizontal-bar {
+            width: 200px;
+            height: 20px;
+        }
+
+        .vertical-bar {
+            width: 20px;
+            height: 200px;
+            flex-direction: column;
+        }
+
+        .thumb {
+            position: absolute;
+            background-color: #555;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            transition: transform 0.05s;
+        }
+
+        #joystick_type_one {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            margin: 20px;
+            width: 100%;
+        }
+
+        .joystick {
+            position: relative;
+            background-color: #ddd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0px;
+            touch-action: none;
+            width: 75vmin;
+            /*75% of the minimum dimension of height or width of window*/
+            height: 75vmin;
+            /*75% of the minimum dimension of height or width of window*/
+        }
+
+        #joystick_type_two {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            width: 75vmin;
+            /*75% of the minimum dimension of height or width of window*/
+            height: 75vmin;
+            /*75% of the minimum dimension of height or width of window*/
+        }
+
+        #joystick_type_one,
+        #joystick_type_two {
+            visibility: hidden;
+        }
+
+        .inner-circle {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background-color: #555;
+            border-radius: 50%;
+        }
+
+        .hidden {
+            visibility: hidden;
+        }
+
+        .joystickHolder {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            background-color: #FFF0;
+            text-align: center;
+            width: 100%;
+            flex: 1;
+        }
+
+        @media (min-width: 600px) {
+            #mainHolderDiv {
+                flex-direction: column;
+                gap: 20px;
+            }
+        }
+
+        .output {
+            font-size: 1.2em;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        #loaderDiv {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0006;
+            text-align: center;
+            width: 100%;
+            height: 100%;
+        }
+
+        .loader {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: inline-block;
+            position: relative;
+            border: 3px solid;
+            border-color: #FFF #FFF transparent transparent;
+            box-sizing: border-box;
+            animation: rotation 1s linear infinite;
+        }
+
+        .loader::after,
+        .loader::before {
+            content: '';
+            box-sizing: border-box;
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            margin: auto;
+            border: 3px solid;
+            border-color: transparent transparent #FF3D00 #FF3D00;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            box-sizing: border-box;
+            animation: rotationBack 0.5s linear infinite;
+            transform-origin: center center;
+        }
+
+        .loader::before {
+            width: 32px;
+            height: 32px;
+            border-color: #FFF #FFF transparent transparent;
+            animation: rotation 1.5s linear infinite;
+        }
+
+        @keyframes rotation {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes rotationBack {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(-360deg);
+            }
+        }
+    </style>
+</head>
+
+<body onload="onLoadBody();">
+    <div class="bodyHolderDiv">
+        <div id="mainHolderDiv">
+
+            <select id="select_joystick" onchange="handleSelectionChange(this)">
+                <option value="" disabled selected>-- Select an Option --</option>
+                <option value="NoJoystick">None</option>
+                <option value="SingleJoystick">Single Joystick</option>
+                <option value="SeperateJoystick">Separate Joystick</option>
+            </select>
+
+            <div class="output" id="output">X: 0, Y: 0</div>
+
+            <div class="joystickHolder">
+
+                <div id="joystick_type_one">
+
+                    <!-- Vertical Bar -->
+                    <div class="control-bar vertical-bar" id="vertical-bar">
+                        <div class="thumb" id="vertical-thumb"></div>
+                    </div>
+
+                    <!-- Horizontal Bar -->
+                    <div class="control-bar horizontal-bar" id="horizontal-bar">
+                        <div class="thumb" id="horizontal-thumb"></div>
+                    </div>
+                </div>
+                <div id="joystick_type_two">
+                    <div class="joystick" id="joystick">
+                        <div class="inner-circle" id="inner-circle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="loaderDiv">
+            <span class="loader"></span>
+        </div>
+    </div>
+
+    <script>
+        const output = document.getElementById('output');
+
+
+
+
+        const horizontalBar = document.getElementById('horizontal-bar');
+        const horizontalThumb = document.getElementById('horizontal-thumb');
+        const horizontalLimit = horizontalBar.clientWidth / 2 - horizontalThumb.clientWidth / 2;
+        const verticalBar = document.getElementById('vertical-bar');
+        const verticalThumb = document.getElementById('vertical-thumb');
+        const verticalLimit = verticalBar.clientHeight / 2 - verticalThumb.clientHeight / 2;
+        // Helper function to send directions
+        /*
+        function sendDirections(xVal, yVal) {
+            const xobj = new XMLHttpRequest();
+            xobj.open('POST', `/AccessJoystick?x=${xVal}&y=${yVal}`, true);
+            xobj.send();
+        }
+        */
+        // Update horizontal bar
+        function updateHorizontalThumb(x) {
+            const dx = x - horizontalBar.getBoundingClientRect().left - horizontalLimit;
+            const boundedX = Math.max(-horizontalLimit, Math.min(dx, horizontalLimit));
+
+            horizontalThumb.style.transform = `translateX(${boundedX}px)`;
+            const normalizedX = Math.round((boundedX / horizontalLimit) * 1023);
+            xValsUpdates = normalizedX;
+            sendDirections(xValsUpdates, yValsUpdates);
+            updateOutput(normalizedX, null);
+        }
+        // Update vertical bar
+        function updateVerticalThumb(y) {
+            const dy = y - verticalBar.getBoundingClientRect().top - verticalLimit;
+            const boundedY = Math.max(-verticalLimit, Math.min(dy, verticalLimit));
+
+            verticalThumb.style.transform = `translateY(${boundedY}px)`;
+            const normalizedY = Math.round((boundedY / verticalLimit) * 1023);
+            yValsUpdates = normalizedY;
+            sendDirections(xValsUpdates, yValsUpdates);
+            updateOutput(null, normalizedY);
+        }
+        // Reset both thumbs
+        function resetThumbs() {
+            horizontalThumb.style.transform = 'translateX(0px)';
+            verticalThumb.style.transform = 'translateY(0px)';
+            updateOutput(0, 0);
+            sendDirections(0, 0);
+        }
+        // Update output display
+        function updateOutput(x, y) {
+            const currentX = x !== null ? x : 0;
+            const currentY = y !== null ? y : 0;
+            output.textContent = `X: ${currentX}, Y: ${currentY}`;
+        }
+        // Event listeners for horizontal bar
+        horizontalBar.addEventListener('mousedown', (e) => {
+            function onMouseMove(event) {
+                updateHorizontalThumb(event.clientX);
+            }
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                resetThumbs();
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        // Event listeners for vertical bar
+        verticalBar.addEventListener('mousedown', (e) => {
+            function onMouseMove(event) {
+                updateVerticalThumb(event.clientY);
+            }
+            function onMouseUp() {
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+                resetThumbs();
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        // Reset position on touch end for mobile
+        horizontalBar.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            function onTouchMove(event) {
+                updateHorizontalThumb(event.touches[0].clientX);
+            }
+            function onTouchEnd() {
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+                resetThumbs();
+            }
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
+        verticalBar.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            function onTouchMove(event) {
+                updateVerticalThumb(event.touches[0].clientY);
+            }
+            function onTouchEnd() {
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+                resetThumbs();
+            }
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
+
+
+
+
+
+        const joystick = document.getElementById('joystick');
+        const innerCircle = document.getElementById('inner-circle');
+        const outerRadius = joystick.clientWidth / 2;
+        const innerRadius = innerCircle.clientWidth / 2;
+        let startX, startY;
+        function updateJoystick(x, y) {
+            const dx = x - startX;
+            const dy = y - startY;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            const maxDistance = outerRadius - innerRadius;
+
+            const angle = Math.atan2(dy, dx);
+            const boundedDistance = Math.min(distance, maxDistance);
+
+            const posX = Math.cos(angle) * boundedDistance;
+            const posY = Math.sin(angle) * boundedDistance;
+
+            innerCircle.style.transform = `translate(${posX}px, ${posY}px)`;
+
+            const normalizedX = Math.round((posX / maxDistance) * 1023);
+            const normalizedY = Math.round((posY / maxDistance) * 1023);
+
+            sendDirections(normalizedX, normalizedY);
+
+            output.textContent = `X: ${normalizedX}, Y: ${normalizedY}`;
+        }
+        function resetJoystick() {
+            innerCircle.style.transform = 'translate(0px, 0px)';
+            output.textContent = 'X: 0, Y: 0';
+            sendDirections(0, 0); // Send 0,0 to register center position
+        }
+        joystick.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            startX = e.clientX;
+            startY = e.clientY;
+            function onMouseMove(event) {
+                updateJoystick(event.clientX, event.clientY);
+            }
+            function onMouseUp() {
+                resetJoystick();
+                document.removeEventListener('mousemove', onMouseMove);
+                document.removeEventListener('mouseup', onMouseUp);
+            }
+            document.addEventListener('mousemove', onMouseMove);
+            document.addEventListener('mouseup', onMouseUp);
+        });
+        joystick.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            startX = e.touches[0].clientX;
+            startY = e.touches[0].clientY;
+            function onTouchMove(event) {
+                updateJoystick(event.touches[0].clientX, event.touches[0].clientY);
+            }
+            function onTouchEnd() {
+                resetJoystick();
+                document.removeEventListener('touchmove', onTouchMove);
+                document.removeEventListener('touchend', onTouchEnd);
+            }
+            document.addEventListener('touchmove', onTouchMove);
+            document.addEventListener('touchend', onTouchEnd);
+        });
+
+
+
+
+        let xValsUpdates = 0;
+        let yValsUpdates = 0;
+        function handleSelectionChange(e) {
+            try {
+                // Get the selected option value
+                const selectedValue = e.value;
+                console.log(selectedValue);
+                const separateJoystick = document.getElementById('joystick_type_one');
+                const singleJoystick = document.getElementById('joystick_type_two');
+
+                /*
+                separateJoystick.classList.toggle('hidden', selectedValue !== "SeperateJoystick");
+                singleJoystick.classList.toggle('hidden', selectedValue !== "SingleJoystick");
+                */
+                /**/
+                switch (selectedValue) {
+                    case "SingleJoystick":
+                        singleJoystick.style.visibility = "visible";
+                        singleJoystick.style.display = "flex";
+                        separateJoystick.style.visibility = "hidden";
+                        separateJoystick.style.display = "none";
+                        break;
+                    case "SeperateJoystick":
+                        singleJoystick.style.visibility = "hidden";
+                        singleJoystick.style.display = "none";
+                        separateJoystick.style.visibility = "visible";
+                        separateJoystick.style.display = "flex";
+                        break;
+                    default:
+                        singleJoystick.style.visibility = "hidden";
+                        singleJoystick.style.display = "none";
+                        separateJoystick.style.visibility = "hidden";
+                        separateJoystick.style.display = "none";
+                        break;
+                }
+                /**/
+            }
+            catch (ex) {
+                console.error(ex);
+            }
+        }
+        function showLoader(shallShow) {
+            document.getElementById('loaderDiv').style.visibility = shallShow ? 'visible' : 'hidden';
+            /*
+            var LoaderDiv = document.getElementById('loaderDiv');
+            if (LoaderDiv !== null && LoaderDiv !== undefined) {
+                if (shallShow) {
+                    LoaderDiv.style.visibility = "visible";
+                }
+                else {
+                    LoaderDiv.style.visibility = "hidden";
+                }
+            }
+            */
+        }
+        function showHideStatus(shallShow, displayText = "") {
+            var loginStatus = document.getElementById("loginStatus");
+            if (loginStatus !== null && loginStatus !== undefined) {
+                if (shallShow !== null && shallShow !== undefined) {
+                    if (shallShow === true) {
+                        if (displayText !== null && displayText !== undefined && displayText !== "") {
+                            loginStatus.innerHTML = displayText;
+                        }
+                        loginStatus.style.visibility = "visible";
+                    }
+                    else {
+                        loginStatus.style.visibility = "hidden";
+                    }
+                }
+            }
+        }
+        function CheckisConnectedToNetwork() {
+            showLoader(true);
+            try {
+                var xobj = new XMLHttpRequest();
+                xobj.overrideMimeType("application/json");
+                xobj.onreadystatechange = function () {
+                    try {
+                        console.log(`\nready State: \t${xobj.readyState}, \t\t\tstatus: \t${xobj.status}\n`);
+                        if (xobj.readyState == 4 && xobj.status == 200) {
+                            var data = xobj.response;
+                            var data_JSON = JSON.parse(data);
+                            console.log(data_JSON);
+                            if (data_JSON !== null && data_JSON !== undefined) {
+                                if (data_JSON.statusCode !== 200 && data_JSON.isSuccessful !== true) {
+                                    showLoader(false);
+                                    showHideStatus(true);
+                                }
+                                else {
+                                    showLoader(false);
+                                    showHideStatus(false);
+                                    window.location.href = './SSIDConnection';
+                                }
+                            }
+                            else {
+                                showLoader(false);
+                            }
+                        }
+                        else {
+                            showHideStatus(true);
+                            showLoader(false);
+                        }
+                    }
+                    catch (ex) {
+                        showLoader(false);
+                    }
+                };
+                xobj.open('GET', './isConnectedToNetwork', true); // Replace 'my_data' with the path to your file
+                xobj.send();
+            }
+            catch (ex) {
+                showLoader(false);
+            }
+        }
+        function sendDirections(xVal, yVal) {
+            var xobj = new XMLHttpRequest();
+            xobj.overrideMimeType('application/json');
+            xobj.onreadystatechange = function () {
+                if (xobj.readyState == 4 && xobj.status == 200) {
+                    var data = xobj.response;
+                    var data_JSON = JSON.parse(data);
+                    console.log(data_JSON);
+                    if (data_JSON !== null && data_JSON !== undefined) {
+                        if (
+                            data_JSON.statusCode !== 200 &&
+                            data_JSON.isSuccessful !== true
+                        ) {
+                            //showHideStatus(true);
+                        } else {
+                            //{"statusCode": "200","isSuccessful": true,"data":{"ssidList":[{"ssid": "LIC","password":"","isEncrypted": false,"signalStrength": 135,"ssidChannel":"5"}]},"message": "This data is a valid one"}
+                            //ssidList = data_JSON.data.ssidList;
+                            //updateSSIDs(data_JSON.data.ssidList);
+                            //showHideStatus(false);
+                            //window.location.href = './SSIDConnection.html';
+                        }
+                    }
+                } else {
+                    //showHideStatus(true);
+                }
+            };
+            let forwardSpeed = 0;
+            let backwardSpeed = 0;
+            let rightSpeed = 0;
+            let leftSpeed = 0;
+            if (xVal <= 0) {
+                leftSpeed = (-1) * xVal;
+            }
+            else {
+                rightSpeed = xVal;
+            }
+            if (yVal <= 0) {
+                forwardSpeed = (-1) * yVal;
+            }
+            else {
+                backwardSpeed = yVal;
+            }
+            let urlString = '/AccessJoystick' + '?forwardSpeed=' + forwardSpeed + '&backwardSpeed=' + backwardSpeed + '&rightSpeed=' + rightSpeed + '&leftSpeed=' + leftSpeed;
+            console.log(urlString);
+            xobj.open('POST', urlString, true); // Replace 'my_data' with the path to your file
+            xobj.send();
+        }
+        function onLoadBody() {
+            CheckisConnectedToNetwork();
+        }
+
+        function handleOrientationChange() {
+            if (window.innerHeight > window.innerWidth) {
+                // Apply rotation when in portrait mode
+                document.body.classList.add('rotate');
+            } else {
+                // Remove rotation when in landscape mode
+                document.body.classList.remove('rotate');
+            }
+        }
+
+        // Initial check and event listener for orientation change
+        window.addEventListener("load", handleOrientationChange);
+        window.addEventListener("resize", handleOrientationChange);
+        window.addEventListener("orientationchange", handleOrientationChange);
+    </script>
+</body>
+
+</html>

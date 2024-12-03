@@ -1,0 +1,80 @@
+/* General Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+  
+  #drawingArea {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    /* background-color: #f4f4f4; */
+    /* background-color: #FFD59E; */
+    background-color: #FFD68A;
+    overflow: hidden;
+  }
+  
+  /* Rectangle Styles */
+  .rectangle {
+    position: absolute;
+    border: 2px solid #000;
+    background-size: cover;
+    background-position: center;
+    cursor: grab;
+  }
+  
+  /* Sidebar */
+  #sidebar {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100%;
+    background-color: #333;
+    color: #fff;
+    padding: 10px;
+    overflow-y: auto;
+    transform: translateX(100%);
+    transition: transform 0.3s;
+    z-index: 1000;
+  }
+  
+  #sidebar button,
+  #sidebar input {
+    display: block;
+    margin: 10px 0;
+    padding: 8px;
+    width: 100%;
+  }
+  
+  .collapsible-list {
+    display: none;
+    background-color: #444;
+    margin-top: 10px;
+    padding: 5px;
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  #sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* Floating Button */
+  #floatingButton {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #333;
+    color: #fff;
+    border-radius: 50%;
+    text-align: center;
+    line-height: 50px;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1100;
+  }
+  
