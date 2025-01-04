@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Cost Estimation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .container {
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .grid button {
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Interior Cost Estimation</h1>
+</header>
+
+<div class="container" id="app">
+    <div class="grid" id="homePage">
+        <button onclick="navigateTo('addRoomPage')">Add Rooms</button>
+        <button onclick="navigateTo('addWorkTypePage')">Add Work Types</button>
+        <button onclick="navigateTo('addItemPage')">Add Items</button>
+    </div>
+
+    <!-- Add Room Page -->
+    <div id="addRoomPage" style="display: none;">
+        <h2>Add Room</h2>
+        <form onsubmit="addRoom(event)">
+            <label for="roomName">Room Name:</label>
+            <input type="text" id="roomName" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add Work Type Page -->
+    <div id="addWorkTypePage" style="display: none;">
+        <h2>Add Work Type</h2>
+        <form onsubmit="addWorkType(event)">
+            <label for="typeName">Type Name:</label>
+            <input type="text" id="typeName" required>
+
+            <label for="unitSystem">Unit System:</label>
+            <select id="unitSystem">
+                <option value="imperial">Imperial</option>
+                <option value="metric">Metric</option>
+            </select>
+
+            <label for="calculationType">Calculation Type:</label>
+            <select id="calculationType">
+                <option value="area">Area</option>
+                <option value="volume">Volume</option>
+                <option value="weight">Weight</option>
+                <option value="length">Length</option>
+            </select>
+
+            <label for="unit">Units:</label>
+            <input type="text" id="unit" required>
+
+            <label for="pricePerUnit">Price per Unit:</label>
+            <input type="number" id="pricePerUnit" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add Item Page -->
+    <div id="addItemPage" style="display: none;">
+        <h2>Add Items</h2>
+        <div id="itemList"></div>
+        <button onclick="openNewItemForm()">Add New Item</button>
+
+        <div id="itemForm" style="display: none;">
+            <form onsubmit="addItem(event)">
+                <label for="roomDropdown">Room:</label>
+                <select id="roomDropdown"></select>
+
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" required>
+
+                <label for="itemType">Type:</label>
+                <select id="itemType" onchange="adjustFields(this.value)">
+                    <option value="area">Area</option>
+                    <option value="volume">Volume</option>
+                    <option value="weight">Weight</option>
+                </select>
+
+                <div id="dimensionFields"></div>
+
+                <label for="pricePerUnitDisplay">Price per Unit:</label>
+                <input type="number" id="pricePerUnitDisplay" disabled>
+
+                <label for="totalPriceDisplay">Total Price:</label>
+                <input type="number" id="totalPriceDisplay" disabled>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const workTypes = JSON.parse(localStorage.getItem('workTypes')) || [];
+    const items = JSON.parse(localStorage.getItem('items')) || [];
+
+    function navigateTo(pageId) {
+        document.querySelectorAll('.container > div').forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+    }
+
+    function addRoom(event) {
+        event.preventDefault();
+        const roomName = document.getElementById('roomName').value;
+        rooms.push({ id: Date.now(), name: roomName });
+        localStorage.setItem('rooms', JSON.stringify(rooms));
+        document.getElementById('roomName').value = '';
+        navigateTo('homePage');
+    }
+
+    function addWorkType(event) {
+        event.preventDefault();
+        const typeName = document.getElementById('typeName').value;
+        const unitSystem = document.getElementById('unitSystem').value;
+        const calculationType = document.getElementById('calculationType').value;
+        const unit = document.getElementById('unit').value;
+        const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+
+        workTypes.push({
+            id: Date.now(),
+            name: typeName,
+            unitSystem,
+            calculationType,
+            unit,
+            pricePerUnit
+        });
+
+        localStorage.setItem('workTypes', JSON.stringify(workTypes));
+        document.getElementById('typeName').value = '';
+        document.getElementById('unitSystem').value = 'imperial';
+        document.getElementById('calculationType').value = 'area';
+        document.getElementById('unit').value = '';
+        document.getElementById('pricePerUnit').value = '';
+        navigateTo('homePage');
+    }
+
+    function openNewItemForm() {
+        const roomDropdown = document.getElementById('roomDropdown');
+        roomDropdown.innerHTML = rooms.map(room => `<option value="${room.id}">${room.name}</option>`).join('');
+
+        adjustFields(document.getElementById('itemType').value);
+        document.getElementById('itemForm').style.display = 'block';
+    }
+
+    function adjustFields(type) {
+        const dimensionFields = document.getElementById('dimensionFields');
+        dimensionFields.innerHTML = '';
+
+        if (type === 'area') {
+            dimensionFields.innerHTML = `
+                <label for="length">Length:</label>
+                <input type="number" id="length" required>
+
+                <label for="width">Width:</label>
+                <input type="number" id="width" required>
+            `;
+        } else if (type === 'volume') {
+            dimensionFields.innerHTML = `
+                <label for="length">Length:</label>
+                <input type="number" id="length" required>
+
+                <label for="width">Width:</label>
+                <input type="number" id="width" required>
+
+                <label for="height">Height:</label>
+                <input type="number" id="height" required>
+            `;
+        } else if (type === 'weight') {
+            dimensionFields.innerHTML = `
+                <label for="totalValue">Total Value:</label>
+                <input type="number" id="totalValue" required>
+            `;
+        }
+    }
+
+    function addItem(event) {
+        event.preventDefault();
+        const roomId = document.getElementById('roomDropdown').value;
+        const itemName = document.getElementById('itemName').value;
+        const itemType = document.getElementById('itemType').value;
+        const pricePerUnit = parseFloat(document.getElementById('pricePerUnitDisplay').value) || 0;
+
+        let totalUnits = 0;
+        if (itemType === 'area') {
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            totalUnits = length * width;
+        } else if (itemType === 'volume') {
+            const length = parseFloat(document.getElementById('length').value);
+            const width = parseFloat(document.getElementById('width').value);
+            const height = parseFloat(document.getElementById('height').value);
+            totalUnits = length * width * height;
+        } else if (itemType === 'weight') {
+            totalUnits = parseFloat(document.getElementById('totalValue').value);
+        }
+
+        const totalPrice = totalUnits * pricePerUnit;
+
+        items.push({
+            id: Date.now(),
+            roomId,
+            name: itemName,
+            type: itemType,
+            totalPrice
+        });
+
+        localStorage.setItem('items', JSON.stringify(items));
+        updateItemList();
+
+        document.getElementById('itemName').value = '';
+        document.getElementById('itemType').value = 'area';
+        document.getElementById('dimensionFields').innerHTML = '';
+        document.getElementById('pricePerUnitDisplay').value = '';
+        document.getElementById('totalPriceDisplay').value = '';
+
+        document.getElementById('itemForm').style.display = 'none';
+    }
+
+    function updateItemList() {
+        const itemList = document.getElementById('itemList');
+        itemList.innerHTML = items.map(item => `
+            <div>
+                <strong>${item.name}</strong>: $${item.totalPrice.toFixed(2)}
+            </div>
+        `).join('');
+    }
+
+    document.addEventListener('DOMContentLoaded', updateItemList);
+</script>
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Task Planner</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <div id="body-holder">
+    <header>
+      <button id="sort-btn">Sort</button>
+      <button id="toggle-btn">Toggle View</button>
+    </header>
+
+
+    <main>
+      <ul id="task-list" class="task-list"></ul>
+    </main>
+
+
+    <div class="floating-icon" id="add-icon">+</div>
+    <div class="sub-icon top" id="main-task-icon">M</div>
+    <div class="sub-icon right" id="task-icon">T</div>
+
+    <!-- Main Task Popup -->
+    <div class="popup-overlay" id="main-task-overlay">
+      <div class="popup" id="main-task-popup">
+        <div class="popup_header_holder">
+          <h2 class="popup_header">Create/Edit Main Task</h2>
+          <button class="close-btn" onclick="closePopup('main-task-overlay')">X</button>
+        </div>
+        <div class="popup-data-holder">
+          <input type="text" id="main-task-name" placeholder="Task Name" />
+          <input type="date" id="main-task-date" />
+        </div>
+        <div class="popup-button-holder" id="popup-buttons">
+          <button id="main-task-submit">Submit</button>
+          <button id="main-task-update">Update</button>
+          <button id="main-task-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Popup -->
+    <div class="popup-overlay" id="task-overlay">
+      <div class="popup" id="task-popup">
+        <div class="popup_header_holder">
+          <p class="popup_header">Create/Edit Task</p>
+          <button class="close-btn" onclick="closePopup('task-overlay')">X</button>
+        </div>
+        <div class="popup-data-holder">
+          <input type="text" id="task-name" placeholder="Task Name" />
+          <select id="task-main-task">
+            <option value="none">None</option>
+          </select>
+          <input type="date" id="task-date" />
+        </div>
+        <div class="popup-button-holder" id="popup-buttons">
+          <button id="task-submit">Submit</button>
+          <button id="task-update">Update</button>
+          <button id="task-delete">Delete</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+
+</html>
