@@ -19,11 +19,11 @@ const mainTaskOverlay = document.getElementById('main-task-overlay');
 const taskOverlay = document.getElementById('task-overlay');
 
 const mainTaskAddBtn = document.getElementById('main-task-submit');
-const mainTaskUpdateBtn = document.getElementById('main-task-update').addEventListener('click', updateMainTask);
-const mainTaskDeleteBtn = document.getElementById('main-task-delete').addEventListener('click', deleteMainTask);
+const mainTaskUpdateBtn = document.getElementById('main-task-update');
+const mainTaskDeleteBtn = document.getElementById('main-task-delete');
 const taskAddBtn = document.getElementById('task-submit');
-const taskUpdateBtn = document.getElementById('task-update').addEventListener('click', updateMainTask);
-const taskDeleteBtn = document.getElementById('task-delete').addEventListener('click', deleteMainTask);
+const taskUpdateBtn = document.getElementById('task-update');
+const taskDeleteBtn = document.getElementById('task-delete');
 
 // Add Event Listeners
 addIcon.addEventListener('click', toggleIcons);
@@ -104,6 +104,8 @@ function syncMainTaskData(mainTask = null){
   const _mainTask = {
     id: Date.now(),
     name,
+    isMainTask: true,
+    isTask: false,
     byDate: byDate || null,
     createdDate: new Date().toISOString(),
     isCompleted: false
@@ -154,8 +156,14 @@ function updateMainTask(){
 function deleteMainTask(){
   let mainTask = selectedMainTask;
   if(mainTask !== null && mainTask !== undefined){
+    mainTasks = mainTasks.filter(item => item.id === mainTask.id);
+    tasks = tasks.filter(item => item.mainTaskId !== task.mainTaskId);
+    saveData();
+    /*
     let _mainTask = mainTasks.find(item => item.id === mainTask.id);
     mainTasks.remove(_mainTask);
+    */
+
   }
 }
 
@@ -187,6 +195,8 @@ function syncTaskData(task = null){
   else{const _task = {
     id: Date.now(),
     name,
+    isMainTask: false,
+    isTask: true,
     mainTaskId: mainTaskId === 'none' ? "Uncategorized" : mainTaskId,
     byDate: byDate || null,
     createdDate: new Date().toISOString(),
@@ -245,13 +255,26 @@ function updateTask(){
 function deleteTask(){
   let task = selectedTask;
   if(task !== null && task !== undefined){
-    let _task = tasks.find(item => item.id === task.id);
-    tasks.remove(_task);
+    tasks = tasks.filter(item => item.id !== task.id);
+    saveData();
+    //let _task = tasks.find(item => item.id === task.id);
+    //tasks.remove(_task);
   }
 }
 
-function editTask(taskObject) {
+function editListObject(taskObject) {
   if(taskObject !== null && taskObject !== undefined){
+    if(taskObject.isMainTask){
+      selectedMainTask = taskObject;
+      let nameObj = document.getElementById('main-task-name');
+      let byDateObj = document.getElementById('main-task-date');
+
+      nameObj.value = taskObject.name;
+      byDateObj.value = taskObject.byDate;
+
+      openPopup(mainTaskOverlay);
+    }
+    else{
     selectedTask = taskObject;
     let nameObj = document.getElementById('task-name');
     let mainTaskIdObj = document.getElementById('task-main-task');
@@ -262,6 +285,7 @@ function editTask(taskObject) {
     byDateObj.value = taskObject.byDate;
 
     openPopup(taskOverlay);
+    }
   }
 }
 
@@ -299,7 +323,7 @@ function renderTasks() {
     let listItemTouchOverlay = document.createElement('div');
     listItemTouchOverlay.setAttribute('data-custom-data', JSON.stringify(task));
     listItemTouchOverlay.id = "task_touch_overlay_div";
-    listItemTouchOverlay.addEventListener('click', () => editTask(task));
+    listItemTouchOverlay.addEventListener('click', () => editListObject(task));
 
     let listItemDiv =  document.createElement('div');
     listItemDiv.setAttribute('data-custom-data', JSON.stringify(task));
