@@ -7,6 +7,7 @@ let isGroupedView = false;
 let sortOrder = 'asc';
 let editingTask = null;
 let isBusy = false;
+const noCategoryValue = "000";
 
 // DOM Elements
 const mainTaskPopup = document.getElementById('main-task-popup');
@@ -156,8 +157,8 @@ function updateMainTask(){
 function deleteMainTask(){
   let mainTask = selectedMainTask;
   if(mainTask !== null && mainTask !== undefined){
-    mainTasks = mainTasks.filter(item => item.id === mainTask.id);
-    tasks = tasks.filter(item => item.mainTaskId !== task.mainTaskId);
+    mainTasks = mainTasks.filter(mainTaskItem => mainTaskItem.id !== mainTask.id);
+    tasks = tasks.filter(taskItem => taskItem.mainTaskId.toString() !== mainTask.id.toString());
     saveData();
     /*
     let _mainTask = mainTasks.find(item => item.id === mainTask.id);
@@ -197,7 +198,7 @@ function syncTaskData(task = null){
     name,
     isMainTask: false,
     isTask: true,
-    mainTaskId: mainTaskId === 'none' ? "Uncategorized" : mainTaskId,
+    mainTaskId: mainTaskId,// === 'none' ? "Uncategorized" : mainTaskId,
     byDate: byDate || null,
     createdDate: new Date().toISOString(),
     isCompleted: false
@@ -209,7 +210,7 @@ function syncTaskData(task = null){
   
   saveData();
   nameObj.value = "";
-  mainTaskIdObj.value = "none";
+  mainTaskIdObj.value = noCategoryValue;//"none";
   byDateObj.value = "";
   closePopup(taskOverlay.id);
 }
@@ -281,7 +282,7 @@ function editListObject(taskObject) {
     let byDateObj = document.getElementById('task-date');
   
     nameObj.value = taskObject.name;
-    mainTaskIdObj.value = taskObject.mainTaskId === "Uncategorized" ? "none" : taskObject.mainTaskId;
+    mainTaskIdObj.value = taskObject.mainTaskId;// === "Uncategorized" ? "none" : taskObject.mainTaskId;
     byDateObj.value = taskObject.byDate;
 
     openPopup(taskOverlay);
@@ -292,7 +293,7 @@ function editListObject(taskObject) {
 // Update Main Task Dropdown
 function updateMainTaskDropdown() {
   const dropdown = document.getElementById('task-main-task');
-  dropdown.innerHTML = '<option value="none">None</option>';
+  dropdown.innerHTML = `<option value=${noCategoryValue}>None</option>`;
   mainTasks.forEach(task => {
     const option = document.createElement('option');
     option.value = task.id;
