@@ -63,6 +63,23 @@ function closeIcons() {
     if(popup !== null && popup !== undefined){
       popup.style.visibility = 'hidden';
     }
+
+    try{
+      let mainTask_NameObj = document.getElementById('main-task-name');
+      let mainTask_ByDateObj = document.getElementById('main-task-date');
+      mainTask_NameObj.value = "";
+      mainTask_ByDateObj.value = "";
+
+      let task_NameObj = document.getElementById('task-name');
+      let task_MainTaskIdObj = document.getElementById('task-main-task');
+      let task_ByDateObj = document.getElementById('task-date');
+      task_NameObj.value = "";
+      task_MainTaskIdObj.value = noCategoryValue;//"none";
+      task_ByDateObj.value = "";
+    }
+    catch(ex){
+      console.error(ex);
+    }
     //}
   }
 
@@ -116,8 +133,6 @@ function syncMainTaskData(mainTask = null){
 }
   updateMainTaskDropdown();
   saveData();
-  nameObj.value = "";
-  byDateObj.value = "";
   closePopup(mainTaskOverlay.id);
 }
 // Add Main Task
@@ -160,6 +175,7 @@ function deleteMainTask(){
     mainTasks = mainTasks.filter(mainTaskItem => mainTaskItem.id !== mainTask.id);
     tasks = tasks.filter(taskItem => taskItem.mainTaskId.toString() !== mainTask.id.toString());
     saveData();
+    closePopup(mainTaskOverlay.id);
     /*
     let _mainTask = mainTasks.find(item => item.id === mainTask.id);
     mainTasks.remove(_mainTask);
@@ -209,9 +225,6 @@ function syncTaskData(task = null){
 
   
   saveData();
-  nameObj.value = "";
-  mainTaskIdObj.value = noCategoryValue;//"none";
-  byDateObj.value = "";
   closePopup(taskOverlay.id);
 }
 // Add Task
@@ -258,6 +271,7 @@ function deleteTask(){
   if(task !== null && task !== undefined){
     tasks = tasks.filter(item => item.id !== task.id);
     saveData();
+    closePopup(taskOverlay.id);
     //let _task = tasks.find(item => item.id === task.id);
     //tasks.remove(_task);
   }
