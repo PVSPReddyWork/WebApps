@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>False Ceiling Electric Drawing</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    #drawing-area {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #f0f0f0;
+    }
+
+    .floating-menu {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: #007BFF;
+      color: white;
+      padding: 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      z-index: 100;
+    }
+
+    .sidebar {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 250px;
+      height: 100%;
+      background: #333;
+      color: white;
+      padding: 15px;
+      visibility: hidden;
+      box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+      transition: left 0.3s;
+      z-index: 99;
+    }
+    .sidebar.display_show {
+        visibility: visible;
+    }
+
+    /* .sidebar.open {
+      left: 0;
+    } */
+
+    .sidebar button, .sidebar input {
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 100%;
+    }
+
+    .shape {
+      position: absolute;
+      border: 1px solid black;
+      background-color: transparent;
+      cursor: move;
+    }
+
+    #canvas-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+
+    .slider-container {
+      margin-top: 20px;
+    }
+
+    .slider-container label {
+      color: white;
+      display: block;
+    }
+
+    .slider-container input {
+      width: 100%;
+    }
+  </style>
+</head>
+<body>
+  <div id="drawing-area">
+    <div class="floating-menu" onclick="toggleSidebar()">Menu</div>
+
+    <div class="sidebar" id="sidebar">
+      <button onclick="addRectangle()">Add Rectangle</button>
+      <button onclick="addCircle()">Add Circle</button>
+      <button onclick="addLine()">Add Line</button>
+      <button onclick="clearCanvas()">Clear Drawing</button>
+      <button onclick="exportDesign()">Export Design</button>
+      <input type="file" id="importFile" onchange="importDesign()" />
+      <button onclick="takeScreenshot()">Take Screenshot</button>
+
+      <div class="slider-container">
+        <label for="width-slider">Width:</label>
+        <input type="range" id="width-slider" min="10" max="500" value="100" onchange="updateSize('width')">
+
+        <label for="height-slider">Height:</label>
+        <input type="range" id="height-slider" min="10" max="500" value="100" onchange="updateSize('height')">
+      </div>
+    </div>
+
+    <div id="canvas-container"></div>
+  </div>
+
+  <script>
+    const drawingArea = document.getElementById('drawing-area');
+    const sidebar = document.getElementById('sidebar');
+
+    let currentElement = null;
+    let offsetX, offsetY;
+
+    function toggleSidebar() {
+      //sidebar.classList.toggle('open');
+      sidebar.classList.toggle('display_show');
+    }
+
+    function createShape(type) {
+      const shape = document.createElement('div');
+      shape.classList.add('shape');
+      shape.dataset.type = type;
+
+      if (type === 'rectangle') {
+        shape.style.width = '100px';
+        shape.style.height = '50px';
+        shape.style.backgroundColor = 'white';
+      } else if (type === 'circle') {
+        shape.style.width = '50px';
+        shape.style.height = '50px';
+        shape.style.borderRadius = '50%';
+        shape.style.backgroundColor = 'white';
+      } else if (type === 'line') {
+        shape.style.width = '2px';
+        shape.style.height = '100px';
+        shape.style.backgroundColor = 'black';
+      }
+
+      shape.style.top = '50px';
+      shape.style.left = '50px';
+      shape.draggable = true;
+
+      shape.addEventListener('mousedown', startDrag);
+      shape.addEventListener('click', selectShape);
+
+      drawingArea.appendChild(shape);
+    }
+
+    function addRectangle() {
+      createShape('rectangle');
+    }
+
+    function addCircle() {
+      createShape('circle');
+    }
+
+    function addLine() {
+      createShape('line');
+    }
+
+    function startDrag(e) {
+      currentElement = e.target;
+      offsetX = e.offsetX;
+      offsetY = e.offsetY;
+
+      drawingArea.addEventListener('mousemove', drag);
+      drawingArea.addEventListener('mouseup', stopDrag);
+    }
+
+    function drag(e) {
+      if (!currentElement) return;
+      currentElement.style.left = `${e.pageX - offsetX}px`;
+      currentElement.style.top = `${e.pageY - offsetY}px`;
+    }
+
+    function stopDrag() {
+      drawingArea.removeEventListener('mousemove', drag);
+      drawingArea.removeEventListener('mouseup', stopDrag);
+      currentElement = null;
+    }
+
+    function selectShape(e) {
+      currentElement = e.target;
+
+      if (currentElement) {
+        const width = parseInt(currentElement.style.width);
+        const height = parseInt(currentElement.style.height);
+
+        document.getElementById('width-slider').value = width;
+        document.getElementById('height-slider').value = height;
+      }
+    }
+
+    function updateSize(dimension) {
+      if (!currentElement) return;
+
+      const value = document.getElementById(`${dimension}-slider`).value;
+
+      if (dimension === 'width') {
+        currentElement.style.width = `${value}px`;
+      } else if (dimension === 'height') {
+        currentElement.style.height = `${value}px`;
+      }
+    }
+
+    function clearCanvas() {
+      document.querySelectorAll('.shape').forEach(shape => shape.remove());
+    }
+
+    function exportDesign() {
+      const shapes = Array.from(document.querySelectorAll('.shape')).map(shape => ({
+        type: shape.dataset.type,
+        style: shape.style.cssText
+      }));
+
+      const blob = new Blob([JSON.stringify(shapes, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = 'design.json';
+      a.click();
+    }
+
+    function importDesign() {
+      const file = document.getElementById('importFile').files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        const shapes = JSON.parse(reader.result);
+        clearCanvas();
+        shapes.forEach(shapeData => {
+          const shape = document.createElement('div');
+          shape.classList.add('shape');
+          shape.dataset.type = shapeData.type;
+          shape.style.cssText = shapeData.style;
+          shape.addEventListener('mousedown', startDrag);
+          shape.addEventListener('click', selectShape);
+          drawingArea.appendChild(shape);
+        });
+      };
+      reader.readAsText(file);
+    }
+
+    function takeScreenshot() {
+      html2canvas(drawingArea).then(canvas => {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = 'drawing.png';
+        a.click();
+      });
+    }
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</body>
+</html>

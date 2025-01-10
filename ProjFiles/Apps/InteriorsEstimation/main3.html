@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interior Cost Estimation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em;
+        }
+        .container {
+            padding: 20px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 15px;
+        }
+        .grid button {
+            padding: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+            margin: auto;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, button {
+            padding: 10px;
+            font-size: 1rem;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Interior Cost Estimation</h1>
+</header>
+
+<div class="container" id="app">
+    <div class="grid" id="homePage">
+        <button onclick="navigateTo('addRoomPage')">Add Rooms</button>
+        <button onclick="navigateTo('addWorkTypePage')">Add Work Types</button>
+        <button onclick="navigateTo('addItemPage')">Add Items</button>
+    </div>
+
+    <!-- Add Room Page -->
+    <div id="addRoomPage" style="display: none;">
+        <button onclick="navigateTo('homePage')">Back</button>
+        <h2>Add Room</h2>
+        <div id="roomList"></div>
+        <form onsubmit="addRoom(event)">
+            <label for="roomName">Room Name:</label>
+            <input type="text" id="roomName" required>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add Work Type Page -->
+    <div id="addWorkTypePage" style="display: none;">
+        <button onclick="navigateTo('homePage')">Back</button>
+        <h2>Add Work Type</h2>
+        <div id="workTypeList"></div>
+        <form onsubmit="addWorkType(event)">
+            <label for="typeName">Type Name:</label>
+            <input type="text" id="typeName" required>
+
+            <label for="unitSystem">Unit System:</label>
+            <select id="unitSystem">
+                <option value="imperial">Imperial</option>
+                <option value="metric">Metric</option>
+            </select>
+
+            <label for="calculationType">Calculation Type:</label>
+            <select id="calculationType">
+                <option value="area">Area</option>
+                <option value="volume">Volume</option>
+                <option value="weight">Weight</option>
+                <option value="length">Length</option>
+            </select>
+
+            <label for="unit">Units:</label>
+            <input type="text" id="unit" required>
+
+            <label for="pricePerUnit">Price per Unit:</label>
+            <input type="number" id="pricePerUnit" required>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <!-- Add Item Page -->
+    <div id="addItemPage" style="display: none;">
+        <button onclick="navigateTo('homePage')">Back</button>
+        <h2>Add Items</h2>
+        <div id="itemList"></div>
+        <button onclick="openNewItemForm()">Add New Item</button>
+
+        <div id="itemForm" style="display: none;">
+            <form onsubmit="addItem(event)">
+                <label for="roomDropdown">Room:</label>
+                <select id="roomDropdown"></select>
+
+                <label for="itemName">Item Name:</label>
+                <input type="text" id="itemName" required>
+
+                <label for="itemType">Type:</label>
+                <select id="itemType" onchange="adjustFields(this.value)">
+                    <option value="">-- Select Type --</option>
+                </select>
+
+                <label for="unitDisplay">Unit:</label>
+                <input type="text" id="unitDisplay" disabled>
+
+                <div id="dimensionFields"></div>
+
+                <label for="pricePerUnitDisplay">Price per Unit:</label>
+                <input type="number" id="pricePerUnitDisplay" disabled>
+
+                <label for="totalPriceDisplay">Total Price:</label>
+                <input type="number" id="totalPriceDisplay" disabled>
+
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const rooms = JSON.parse(localStorage.getItem('rooms')) || [];
+    const workTypes = JSON.parse(localStorage.getItem('workTypes')) || [];
+    const items = JSON.parse(localStorage.getItem('items')) || [];
+
+    function navigateTo(pageId) {
+        document.querySelectorAll('.container > div').forEach(page => page.style.display = 'none');
+        document.getElementById(pageId).style.display = 'block';
+        if (pageId === 'addRoomPage') updateRoomList();
+        if (pageId === 'addWorkTypePage') updateWorkTypeList();
+        if (pageId === 'addItemPage') updateItemList();
+    }
+
+    function addRoom(event) {
+        event.preventDefault();
+        const roomName = document.getElementById('roomName').value;
+        rooms.push({ id: Date.now(), name: roomName });
+        localStorage.setItem('rooms', JSON.stringify(rooms));
+        document.getElementById('roomName').value = '';
+        navigateTo('homePage');
+    }
+
+    function updateRoomList() {
+        const roomList = document.getElementById('roomList');
+        roomList.innerHTML = rooms.map(room => `
+            <div>
+                ${room.name} <button onclick="editRoom(${room.id})">Edit</button> <button onclick="deleteRoom(${room.id})">Delete</button>
+            </div>
+        `).join('');
+        const roomDropdown = document.getElementById('roomDropdown');
+        roomDropdown.innerHTML = rooms.map(room => `<option value="${room.id}">${room.name}</option>`).join('');
+    }
+
+    function editRoom(id) {
+        const room = rooms.find(r => r.id === id);
+        document.getElementById('roomName').value = room.name;
+        deleteRoom(id);
+    }
+
+    function deleteRoom(id) {
+        const index = rooms.findIndex(r => r.id === id);
+        rooms.splice(index, 1);
+        localStorage.setItem('rooms', JSON.stringify(rooms));
+        updateRoomList();
+    }
+
+    function addWorkType(event) {
+        event.preventDefault();
+        const typeName = document.getElementById('typeName').value;
+        const unitSystem = document.getElementById('unitSystem').value;
+        const calculationType = document.getElementById('calculationType').value;
+        const unit = document.getElementById('unit').value;
+        const pricePerUnit = parseFloat(document.getElementById('pricePerUnit').value);
+
+        workTypes.push({
+            id: Date.now(),
+            name: typeName,
+            unitSystem,
+            calculationType,
+            unit,
+            pricePerUnit
+        });
+
+        localStorage.setItem('workTypes', JSON.stringify(workTypes));
+        document.getElementById('typeName').value = '';
+        document.getElementById('unitSystem').value = 'imperial';
+        document.getElementById('calculationType').value = 'area';
+        document.getElementById('unit').value = '';
+        document.getElementById('pricePerUnit').value = '';
+        navigateTo('homePage');
+    }
+
+    function updateWorkTypeList() {
+        const workTypeList = document.getElementById('workTypeList');
+        workTypeList.innerHTML = workTypes.map(type => `
+            <div>
+                ${type.name} <button onclick="editWorkType(${type.id})">Edit</button> <button onclick="deleteWorkType(${type.id})">Delete</button>
+            </div>
+        `).join('');
+        const itemTypeDropdown = document.getElementById('itemType');
+        itemTypeDropdown.innerHTML = workTypes.map(type => `<option value="${type.id}">${type.name}</option>`).join('');
+    }
+
+    function editWorkType(id) {
+        const workType = workTypes.find(w => w.id === id);
+        document.getElementById('typeName').value = workType.name;
+        document.getElementById('unitSystem').value = workType.unitSystem;
+        document.getElementById('calculationType').value = workType.calculationType;
+        document.getElementById('unit').value = workType.unit;
+        document.getElementById('pricePerUnit').value = workType.pricePerUnit;
+        deleteWorkType(id);
+    }
+
+    function deleteWorkType(id) {
+        const index = workTypes.findIndex(w => w.id === id);
+        workTypes.splice(index, 1);
+        localStorage.setItem('workTypes', JSON.stringify(workTypes));
+        updateWorkTypeList();
+    }
+
+    function openNewItemForm() {
+        document.getElementById('itemForm').style.display = 'block';
+        document.getElementById('itemName').value = '';
+        document.getElementById('itemType').value = '';
+        document.getElementById('unitDisplay').value = '';
+        document.getElementById('dimensionFields').innerHTML = '';
+        document.getElementById('pricePerUnitDisplay').value = '';
+        document.getElementById('totalPriceDisplay').value = '';
+    }
+
+    function adjustFields(typeId) {
+        const workType = workTypes.find(w => w.id === parseInt(typeId));
+        if (!workType) return;
+
+        document.getElementById('unitDisplay').value = workType.unit;
+        document.getElementById('pricePerUnitDisplay').value = workType.pricePerUnit;
+
+        const dimensionFields = document.getElementById('dimensionFields');
+        dimensionFields.innerHTML = '';
+
+        if (workType.calculationType === 'area') {
+            dimensionFields.innerHTML = `
+                <label for="length">Length:</label>
+                <input type="number" id="length" oninput="calculateTotalPrice()" required>
+                <label for="width">Width:</label>
+                <input type="number" id="width" oninput="calculateTotalPrice()" required>
+            `;
+        } else if (workType.calculationType === 'volume') {
+            dimensionFields.innerHTML = `
+                <label for="length">Length:</label>
+                <input type="number" id="length" oninput="calculateTotalPrice()" required>
+                <label for="width">Width:</label>
+                <input type="number" id="width" oninput="calculateTotalPrice()" required>
+                <label for="height">Height:</label>
+                <input type="number" id="height" oninput="calculateTotalPrice()" required>
+            `;
+        } else {
+            dimensionFields.innerHTML = `
+                <label for="totalValue">Total Value:</label>
+                <input type="number" id="totalValue" oninput="calculateTotalPrice()" required>
+            `;
+        }
+    }
+
+    function calculateTotalPrice() {
+        const typeId = parseInt(document.getElementById('itemType').value);
+        const workType = workTypes.find(w => w.id === typeId);
+        if (!workType) return;
+
+        let totalValue = 0;
+
+        if (workType.calculationType === 'area') {
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            totalValue = length * width;
+        } else if (workType.calculationType === 'volume') {
+            const length = parseFloat(document.getElementById('length').value) || 0;
+            const width = parseFloat(document.getElementById('width').value) || 0;
+            const height = parseFloat(document.getElementById('height').value) || 0;
+            totalValue = length * width * height;
+        } else {
+            totalValue = parseFloat(document.getElementById('totalValue').value) || 0;
+        }
+
+        const totalPrice = totalValue * workType.pricePerUnit;
+        document.getElementById('totalPriceDisplay').value = totalPrice.toFixed(2);
+    }
+
+    function addItem(event) {
+        event.preventDefault();
+        const roomId = parseInt(document.getElementById('roomDropdown').value);
+        const itemName = document.getElementById('itemName').value;
+        const typeId = parseInt(document.getElementById('itemType').value);
+        const totalPrice = parseFloat(document.getElementById('totalPriceDisplay').value);
+
+        if (!roomId || !typeId || !itemName || isNaN(totalPrice)) return;
+
+        items.push({
+            id: Date.now(),
+            roomId,
+            itemName,
+            typeId,
+            totalPrice,
+        });
+
+        localStorage.setItem('items', JSON.stringify(items));
+        document.getElementById('itemForm').style.display = 'none';
+        updateItemList();
+    }
+
+    function updateItemList() {
+        const itemList = document.getElementById('itemList');
+        itemList.innerHTML = items.map(item => `
+            <div>
+                ${item.itemName} - $${item.totalPrice.toFixed(2)}
+                <button onclick="editItem(${item.id})">Edit</button>
+                <button onclick="deleteItem(${item.id})">Delete</button>
+            </div>
+        `).join('');
+    }
+
+    function editItem(id) {
+        const item = items.find(i => i.id === id);
+        if (!item) return;
+
+        document.getElementById('itemForm').style.display = 'block';
+        document.getElementById('roomDropdown').value = item.roomId;
+        document.getElementById('itemName').value = item.itemName;
+        document.getElementById('itemType').value = item.typeId;
+        adjustFields(item.typeId);
+
+        const workType = workTypes.find(w => w.id === item.typeId);
+        const totalValue = item.totalPrice / workType.pricePerUnit;
+
+        if (workType.calculationType === 'area') {
+            const length = Math.sqrt(totalValue);
+            document.getElementById('length').value = length.toFixed(2);
+            document.getElementById('width').value = length.toFixed(2);
+        } else if (workType.calculationType === 'volume') {
+            const cubeRoot = Math.cbrt(totalValue);
+            document.getElementById('length').value = cubeRoot.toFixed(2);
+            document.getElementById('width').value = cubeRoot.toFixed(2);
+            document.getElementById('height').value = cubeRoot.toFixed(2);
+        } else {
+            document.getElementById('totalValue').value = totalValue.toFixed(2);
+        }
+
+        deleteItem(id);
+    }
+
+    function deleteItem(id) {
+        const index = items.findIndex(i => i.id === id);
+        if (index === -1) return;
+        items.splice(index, 1);
+        localStorage.setItem('items', JSON.stringify(items));
+        updateItemList();
+    }
+
+    // Initialize with Home Page
+    navigateTo('homePage');
+</script>
+
+</body>
+</html>

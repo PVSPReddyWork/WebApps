@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Project Dashboard</title>
+    <link rel="manifest" href="/manifest.json">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -38,14 +39,14 @@
     <ul id="project-list">
         <!-- Dynamic project links will be added here -->
     </ul>
-
+    <script src="app.js"></script>
     <script>
         // Define the apps directory and fetch its contents dynamically
         const appsDir = './ProjFiles/Apps/';//E:\Projects\WebPages\PVSPReddy\ProjFiles\Apps
         const projectList = document.getElementById('project-list');
 
         // This will simulate fetching project directories
-        const projectFolders = ['ChaiMasti', 'ImageEditor', 'QRGenerator', 'Shop', 'WebPageInvitation', 'Designs', 'PCBDesigner' ]; // Replace with actual dynamic fetch
+        const projectFolders = ['TaskPlanner', 'ChaiMasti', 'ImageEditor', 'QRGenerator', 'Shop', 'WebPageInvitation', 'Designs', 'PCBDesigner' ]; // Replace with actual dynamic fetch
 
         projectFolders.forEach(folder => {
             const listItem = document.createElement('li');
