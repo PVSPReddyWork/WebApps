@@ -33,13 +33,13 @@
           <button class="close-btn" onclick="closePopup('main-task-overlay')">X</button>
         </div>
         <div class="popup-data-holder">
-          <input type="text" id="main-task-name" placeholder="Task Name" />
+          <input type="text" id="main-task-name" placeholder="Task Name" required />
           <input type="date" id="main-task-date" />
         </div>
         <div class="popup-button-holder" id="popup-buttons">
-          <button id="main-task-submit">Submit</button>
-          <button id="main-task-update">Update</button>
-          <button id="main-task-delete">Delete</button>
+          <button class="default_main_task_buttons new_main_task_buttons" id="main-task-submit">Submit</button>
+          <button class="default_main_task_buttons edit_main_task_buttons" id="main-task-update">Update</button>
+          <button class="default_main_task_buttons edit_main_task_buttons" id="main-task-delete">Delete</button>
         </div>
       </div>
     </div>
@@ -52,16 +52,34 @@
           <button class="close-btn" onclick="closePopup('task-overlay')">X</button>
         </div>
         <div class="popup-data-holder">
-          <input type="text" id="task-name" placeholder="Task Name" />
+          <input type="text" id="task-name" placeholder="Task Name" required />
           <select id="task-main-task">
-            <option value="none">None</option>
+            <option value="none" selected>None</option>
           </select>
           <input type="date" id="task-date" />
+          <input type="time" id="task-time" />
+          <div>
+            <div class="reminder_holder">
+              <!-- <button id="button-task-remainder">Add Remainder</button> -->
+              <p>Reminder</p>
+
+              <select id="task-remind-periodically">
+                <option value="none" selected>None</option>
+                <option value="hourly">Hourly</option>
+                <option value="daily">Daily</option>
+                <option value="monthly">Monthly</option>
+                <option value="anually">Anually</option>
+              </select>
+            </div>
+          </div>
+          <div>
+            <p><input type="checkbox" /></p>
+          </div>
         </div>
         <div class="popup-button-holder" id="popup-buttons">
-          <button id="task-submit">Submit</button>
-          <button id="task-update">Update</button>
-          <button id="task-delete">Delete</button>
+          <button class="default_task_buttons new_task_buttons" id="task-submit">Submit</button>
+          <button class="default_task_buttons edit_task_buttons" id="task-update">Update</button>
+          <button class="default_task_buttons edit_task_buttons" id="task-delete">Delete</button>
         </div>
       </div>
     </div>
