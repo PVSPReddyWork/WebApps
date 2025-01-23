@@ -33,13 +33,18 @@
           <button class="close-btn" onclick="closePopup('main-task-overlay')">X</button>
         </div>
         <div class="popup-data-holder">
-          <input type="text" id="main-task-name" placeholder="Task Name" required />
-          <input type="date" id="main-task-date" />
+          <input type="text" id="main-task-name" class="popup_inputs" placeholder="Task Name" required />
+          <input type="date" id="main-task-date" class="popup_inputs" />
         </div>
-        <div class="popup-button-holder" id="popup-buttons">
-          <button class="default_main_task_buttons new_main_task_buttons" id="main-task-submit">Submit</button>
-          <button class="default_main_task_buttons edit_main_task_buttons" id="main-task-update">Update</button>
-          <button class="default_main_task_buttons edit_main_task_buttons" id="main-task-delete">Delete</button>
+        <div class="popup-button-holder popup-edit-button-holder" id="main_task_popup_button_holder">
+        <!-- <div class="popup-button-holder">
+          <div class="no_margin_padding">
+            <button class="popup_buttons default_main_task_buttons new_main_task_buttons" id="main-task-submit">Submit</button>
+          </div>
+          <div class="no_margin_padding popup-edit-button-holder">
+            <button class="popup_buttons default_main_task_buttons edit_main_task_buttons" id="main-task-update">Update</button>
+            <button class="popup_buttons default_main_task_buttons edit_main_task_buttons" id="main-task-delete">Delete</button>
+          </div> </div>-->
         </div>
       </div>
     </div>
@@ -52,35 +57,41 @@
           <button class="close-btn" onclick="closePopup('task-overlay')">X</button>
         </div>
         <div class="popup-data-holder">
-          <input type="text" id="task-name" placeholder="Task Name" required />
-          <select id="task-main-task">
+          <input type="text" id="task-name" class="popup_inputs" placeholder="Task Name" required />
+          <select id="task-main-task" class="popup_inputs">
             <option value="none" selected>None</option>
           </select>
-          <input type="date" id="task-date" />
-          <input type="time" id="task-time" />
-          <div>
-            <div class="reminder_holder">
-              <!-- <button id="button-task-remainder">Add Remainder</button> -->
-              <p>Reminder</p>
-
-              <select id="task-remind-periodically">
+          <input type="date" id="task-date" class="popup_inputs" />
+          <input type="time" id="task-time" class="popup_inputs" />
+          <div class="reminder_holder">
+            <p class="no_margin_padding">Reminder <select id="task-remind-periodically" class="popup_inputs">
                 <option value="none" selected>None</option>
                 <option value="hourly">Hourly</option>
                 <option value="daily">Daily</option>
                 <option value="monthly">Monthly</option>
                 <option value="anually">Anually</option>
-              </select>
-            </div>
+              </select> </p>
           </div>
-          <div>
-            <p><input type="checkbox" /></p>
+          <div id="is_task_completed_holder">
+            <p class="no_margin_padding">Task Completed: <input type="checkbox" class="popup_inputs" /></p>
           </div>
         </div>
-        <div class="popup-button-holder" id="popup-buttons">
-          <button class="default_task_buttons new_task_buttons" id="task-submit">Submit</button>
-          <button class="default_task_buttons edit_task_buttons" id="task-update">Update</button>
-          <button class="default_task_buttons edit_task_buttons" id="task-delete">Delete</button>
+        
+        <div class="popup-button-holder popup-edit-button-holder" id="task_popup_button_holder">
+          <!--<div class="no_margin_padding popup-edit-button-holder">
+            <button class="popup_buttons default_task_buttons edit_task_buttons" id="task-update">Update</button>
+            <button class="popup_buttons default_task_buttons edit_task_buttons" id="task-delete">Delete</button>
+          </div> -->
         </div>
+        <!-- <div class="popup-button-holder">
+          <div class="no_margin_padding">
+            <button class="popup_buttons default_task_buttons new_task_buttons" id="task-submit">Submit</button>
+          </div>
+          <div class="no_margin_padding popup-edit-button-holder">
+            <button class="popup_buttons default_task_buttons edit_task_buttons" id="task-update">Update</button>
+            <button class="popup_buttons default_task_buttons edit_task_buttons" id="task-delete">Delete</button>
+          </div>
+        </div> -->
       </div>
     </div>
   </div>

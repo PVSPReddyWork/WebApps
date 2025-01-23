@@ -19,21 +19,23 @@ const taskIcon = document.getElementById('task-icon');
 const mainTaskOverlay = document.getElementById('main-task-overlay');
 const taskOverlay = document.getElementById('task-overlay');
 
-const mainTaskAddBtn = document.getElementById('main-task-submit');
-const mainTaskUpdateBtn = document.getElementById('main-task-update');
-const mainTaskDeleteBtn = document.getElementById('main-task-delete');
-const taskAddBtn = document.getElementById('task-submit');
-const taskUpdateBtn = document.getElementById('task-update');
-const taskDeleteBtn = document.getElementById('task-delete');
+// const mainTaskAddBtn = document.getElementById('main-task-submit');
+// const mainTaskUpdateBtn = document.getElementById('main-task-update');
+// const mainTaskDeleteBtn = document.getElementById('main-task-delete');
+const mainTaskPopupButtonHolder = document.getElementById('main_task_popup_button_holder');
+// const taskAddBtn = document.getElementById('task-submit');
+// const taskUpdateBtn = document.getElementById('task-update');
+// const taskDeleteBtn = document.getElementById('task-delete');
+const taskPopupButtonHolder = document.getElementById('task_popup_button_holder');
 
 // Add Event Listeners
 addIcon.addEventListener('click', toggleIcons);
-mainTaskAddBtn.addEventListener('click', addMainTask);
-mainTaskUpdateBtn.addEventListener('click', updateMainTask);
-mainTaskDeleteBtn.addEventListener('click', deleteMainTask);
-taskAddBtn.addEventListener('click', addTask);
-taskUpdateBtn.addEventListener('click', updateTask);
-taskDeleteBtn.addEventListener('click', deleteTask);
+// mainTaskAddBtn.addEventListener('click', addMainTask);
+// mainTaskUpdateBtn.addEventListener('click', updateMainTask);
+// mainTaskDeleteBtn.addEventListener('click', deleteMainTask);
+// taskAddBtn.addEventListener('click', addTask);
+// taskUpdateBtn.addEventListener('click', updateTask);
+// taskDeleteBtn.addEventListener('click', deleteTask);
 document.getElementById('sort-btn').addEventListener('click', toggleSort);
 document.getElementById('toggle-btn').addEventListener('click', toggleView);
 
@@ -41,18 +43,20 @@ document.getElementById('toggle-btn').addEventListener('click', toggleView);
 mainTaskIcon.addEventListener('click', () => {
   let byDateObj = document.getElementById('main-task-date');
   setDateTime(byDateObj, null);
-  showHideElements(mainTaskAddBtn, "visible");
-  showHideElements(mainTaskUpdateBtn, "hidden");
-  showHideElements(mainTaskDeleteBtn, "hidden");
+  // showHideElements(mainTaskAddBtn, "visible");
+  // showHideElements(mainTaskUpdateBtn, "hidden");
+  // showHideElements(mainTaskDeleteBtn, "hidden");
+  addRemoveHideElements(mainTaskPopupButtonHolder, `<button class="popup_buttons default_main_task_buttons new_main_task_buttons" id="main-task-submit" onclick="addMainTask()">Submit</button>`)
   openPopup(mainTaskOverlay);
 });
 taskIcon.addEventListener('click', () => {
   let byDateObj = document.getElementById('task-date');
   let byTimeObj = document.getElementById('task-time');
   setDateTime(byDateObj, byTimeObj);
-  showHideElements(taskAddBtn, "visible");
-  showHideElements(taskUpdateBtn, "hidden");
-  showHideElements(taskDeleteBtn, "hidden");
+  // showHideElements(taskAddBtn, "visible");
+  // showHideElements(taskUpdateBtn, "hidden");
+  // showHideElements(taskDeleteBtn, "hidden");
+  addRemoveHideElements(taskPopupButtonHolder, `<button class="popup_buttons default_task_buttons new_task_buttons" onclick="addTask()" id="task-submit">Submit</button>`)
   openPopup(taskOverlay);
 });
 
@@ -104,9 +108,10 @@ function closePopup(popupId) {
     mainTask_NameObj.value = "";
     mainTask_ByDateObj.value = "";
 
-    showHideElements(mainTaskAddBtn, "hidden");
-    showHideElements(mainTaskUpdateBtn, "hidden");
-    showHideElements(mainTaskDeleteBtn, "hidden");
+    // showHideElements(mainTaskAddBtn, "hidden");
+    // showHideElements(mainTaskUpdateBtn, "hidden");
+    // showHideElements(mainTaskDeleteBtn, "hidden");
+    addRemoveHideElements(mainTaskPopupButtonHolder, "");
 
     let task_NameObj = document.getElementById('task-name');
     let task_MainTaskIdObj = document.getElementById('task-main-task');
@@ -119,9 +124,10 @@ function closePopup(popupId) {
     task_ByTimeObj.value = "";
     task_ReminderFrequencyObj.value = "none";
 
-    showHideElements(taskAddBtn, "hidden");
-    showHideElements(taskUpdateBtn, "hidden");
-    showHideElements(taskDeleteBtn, "hidden");
+    // showHideElements(taskAddBtn, "hidden");
+    // showHideElements(taskUpdateBtn, "hidden");
+    // showHideElements(taskDeleteBtn, "hidden");
+    addRemoveHideElements(taskPopupButtonHolder, "");
   }
   catch (ex) {
     console.error(ex);
@@ -148,6 +154,10 @@ async function openPopup(popup) {
 
 function showHideElements(elementObj, visibilityText) {
   elementObj.style.visibility = visibilityText;
+}
+
+function addRemoveHideElements(parentObj, elementString) {
+  parentObj.innerHTML = elementString;
 }
 
 function syncMainTaskData(mainTask = null) {
@@ -352,9 +362,11 @@ function editListObject(taskObject) {
       nameObj.value = taskObject.name;
       byDateObj.value = taskObject.byDate;
 
-      showHideElements(mainTaskAddBtn, "hidden");
-      showHideElements(mainTaskUpdateBtn, "visible");
-      showHideElements(mainTaskDeleteBtn, "visible");
+      // showHideElements(mainTaskAddBtn, "hidden");
+      // showHideElements(mainTaskUpdateBtn, "visible");
+      // showHideElements(mainTaskDeleteBtn, "visible");
+    addRemoveHideElements(mainTaskPopupButtonHolder, `<button class="popup_buttons default_main_task_buttons edit_main_task_buttons" onclick="updateMainTask()" id="main-task-update">Update</button>
+            <button class="popup_buttons default_main_task_buttons edit_main_task_buttons" onclick="deleteMainTask()" id="main-task-delete">Delete</button>`);
 
       openPopup(mainTaskOverlay);
     }
@@ -372,9 +384,11 @@ function editListObject(taskObject) {
       byTimeObj.value = taskObject.byTime;
       reminderFrequencyObj.value = taskObject.reminderFrequency;
 
-      showHideElements(taskAddBtn, "hidden");
-      showHideElements(taskUpdateBtn, "visible");
-      showHideElements(taskDeleteBtn, "visible");
+      // showHideElements(taskAddBtn, "hidden");
+      // showHideElements(taskUpdateBtn, "visible");
+      // showHideElements(taskDeleteBtn, "visible");
+      addRemoveHideElements(taskPopupButtonHolder, `<button class="popup_buttons default_task_buttons edit_task_buttons" onclick="updateTask()" id="task-update">Update</button>
+            <button class="popup_buttons default_task_buttons edit_task_buttons" onclick="deleteTask()" id="task-delete">Delete</button>`)
 
       openPopup(taskOverlay);
     }
