@@ -1,3 +1,26 @@
+// Main file to orchestrate the UI rendering
+import { loadHeader } from './header.js';
+import { loadFooter } from './footer.js';
+import { loadContent } from './content.js';
+
+// Function to initialize the app
+function initializeApp() {
+  const appDiv = document.getElementById('app');
+
+  // Clear the app container
+  appDiv.innerHTML = '';
+
+  // Load UI components from other files
+  loadHeader(appDiv);
+  loadContent(appDiv);
+  loadFooter(appDiv);
+}
+
+// Initialize the app
+initializeApp();
+
+
+
 // Task Data
 let mainTasks = [];
 let tasks = [];
@@ -18,17 +41,34 @@ const mainTaskIcon = document.getElementById('main-task-icon');
 const taskIcon = document.getElementById('task-icon');
 const mainTaskOverlay = document.getElementById('main-task-overlay');
 const taskOverlay = document.getElementById('task-overlay');
+
+// const mainTaskAddBtn = document.getElementById('main-task-submit');
+// const mainTaskUpdateBtn = document.getElementById('main-task-update');
+// const mainTaskDeleteBtn = document.getElementById('main-task-delete');
 const mainTaskPopupButtonHolder = document.getElementById('main_task_popup_button_holder');
+// const taskAddBtn = document.getElementById('task-submit');
+// const taskUpdateBtn = document.getElementById('task-update');
+// const taskDeleteBtn = document.getElementById('task-delete');
 const taskPopupButtonHolder = document.getElementById('task_popup_button_holder');
 
 // Add Event Listeners
 addIcon.addEventListener('click', toggleIcons);
+// mainTaskAddBtn.addEventListener('click', addMainTask);
+// mainTaskUpdateBtn.addEventListener('click', updateMainTask);
+// mainTaskDeleteBtn.addEventListener('click', deleteMainTask);
+// taskAddBtn.addEventListener('click', addTask);
+// taskUpdateBtn.addEventListener('click', updateTask);
+// taskDeleteBtn.addEventListener('click', deleteTask);
 document.getElementById('sort-btn').addEventListener('click', toggleSort);
 document.getElementById('toggle-btn').addEventListener('click', toggleView);
+
 
 mainTaskIcon.addEventListener('click', () => {
   let byDateObj = document.getElementById('main-task-date');
   setDateTime(byDateObj, null);
+  // showHideElements(mainTaskAddBtn, "visible");
+  // showHideElements(mainTaskUpdateBtn, "hidden");
+  // showHideElements(mainTaskDeleteBtn, "hidden");
   addRemoveHideElements(mainTaskPopupButtonHolder, `<button class="popup_buttons default_main_task_buttons new_main_task_buttons" id="main-task-submit" onclick="addMainTask()">Submit</button>`)
   openPopup(mainTaskOverlay);
 });
@@ -36,6 +76,9 @@ taskIcon.addEventListener('click', () => {
   let byDateObj = document.getElementById('task-date');
   let byTimeObj = document.getElementById('task-time');
   setDateTime(byDateObj, byTimeObj);
+  // showHideElements(taskAddBtn, "visible");
+  // showHideElements(taskUpdateBtn, "hidden");
+  // showHideElements(taskDeleteBtn, "hidden");
   addRemoveHideElements(taskPopupButtonHolder, `<button class="popup_buttons default_task_buttons new_task_buttons" onclick="addTask()" id="task-submit">Submit</button>`)
   openPopup(taskOverlay);
 });
@@ -46,8 +89,12 @@ function handleOutsideClick(event) {
     !mainTaskOverlay.contains(event.target) &&
     !taskOverlay.contains(event.target)) {
     closeIcons();
+    //closePopup(mainTaskPopup);
+    //closePopup(taskPopup);
   }
 }
+
+
 
 function closeIcons() {
   mainTaskIcon.classList.remove('visible');
@@ -83,6 +130,10 @@ function closePopup(popupId) {
     let mainTask_ByDateObj = document.getElementById('main-task-date');
     mainTask_NameObj.value = "";
     mainTask_ByDateObj.value = "";
+
+    // showHideElements(mainTaskAddBtn, "hidden");
+    // showHideElements(mainTaskUpdateBtn, "hidden");
+    // showHideElements(mainTaskDeleteBtn, "hidden");
     addRemoveHideElements(mainTaskPopupButtonHolder, "");
 
     let task_NameObj = document.getElementById('task-name');
@@ -95,12 +146,18 @@ function closePopup(popupId) {
     task_ByDateObj.value = "";
     task_ByTimeObj.value = "";
     task_ReminderFrequencyObj.value = "none";
+
+    // showHideElements(taskAddBtn, "hidden");
+    // showHideElements(taskUpdateBtn, "hidden");
+    // showHideElements(taskDeleteBtn, "hidden");
     addRemoveHideElements(taskPopupButtonHolder, "");
   }
   catch (ex) {
     console.error(ex);
   }
+  //}
 }
+
 
 // Toggle Icons
 function toggleIcons() {
@@ -109,9 +166,13 @@ function toggleIcons() {
 }
 
 async function openPopup(popup) {
+  //if(!isBusy){
+  //isBusy = true;
   //await new Promise(resolve => setTimeout(resolve, 1500));
   closeIcons();
   popup.style.visibility = 'visible';
+  //isBusy = false;
+  //}
 }
 
 function showHideElements(elementObj, visibilityText) {
@@ -127,21 +188,21 @@ function syncMainTaskData(mainTask = null) {
   let byDateObj = document.getElementById('main-task-date');
   const name = nameObj.value.trim();
   const byDate = byDateObj.value;
+  if (!name) {
+    alert('Main task name is required and must be unique.');
+    return;
+  }
   if (mainTask !== null && mainTask !== undefined) {
     mainTasks.forEach(item => {
       if (item.id === mainTask.id) {
-        if (!name || mainTasks.some(_task => _task.id !== mainTask.id && _task.name === name)) {
-          alert('Main task name is required and must be unique.');
-          return;
-        }
         item.name = name;
         item.byDate = byDate || mainTask.byDate;
-        item.isMainTaskCompleted = false;
+        item.isCompleted = false;
       }
     })
   }
   else {
-    if (!name || mainTasks.some(_task => _task.name === name)) {
+    if (!name || mainTasks.some(task => task.name === name)) {
       alert('Main task name is required and must be unique.');
       return;
     }
@@ -152,7 +213,7 @@ function syncMainTaskData(mainTask = null) {
       isTask: false,
       byDate: byDate || null,
       createdDate: new Date().toISOString(),
-      isMainTaskCompleted: false
+      isCompleted: false
     };
     mainTask = _mainTask;
     mainTasks.push(mainTask);
@@ -161,10 +222,32 @@ function syncMainTaskData(mainTask = null) {
   saveData();
   closePopup(mainTaskOverlay.id);
 }
-
 // Add Main Task
 function addMainTask() {
   syncMainTaskData();
+  /*
+  let nameObj = document.getElementById('main-task-name');
+  let byDateObj = document.getElementById('main-task-date');
+  const name = nameObj.value.trim();
+  const byDate = byDateObj.value;
+  if (!name || mainTasks.some(task => task.name === name)) {
+    alert('Main task name is required and must be unique.');
+    return;
+  }
+  const mainTask = {
+    id: Date.now(),
+    name,
+    byDate: byDate || null,
+    createdDate: new Date().toISOString(),
+    isCompleted: false
+  };
+  mainTasks.push(mainTask);
+  updateMainTaskDropdown();
+  saveData();
+  nameObj.value = "";
+  byDateObj.value = "";
+  closePopup(mainTaskOverlay.id);
+  */
 }
 function updateMainTask() {
   let mainTask = selectedMainTask;
@@ -180,8 +263,14 @@ function deleteMainTask() {
     tasks = tasks.filter(taskItem => taskItem.mainTaskId.toString() !== mainTask.id.toString());
     saveData();
     closePopup(mainTaskOverlay.id);
+    /*
+    let _mainTask = mainTasks.find(item => item.id === mainTask.id);
+    mainTasks.remove(_mainTask);
+    */
+
   }
 }
+
 
 function syncTaskData(task = null) {
   let nameObj = document.getElementById('task-name');
@@ -189,38 +278,32 @@ function syncTaskData(task = null) {
   let byDateObj = document.getElementById('task-date');
   let byTimeObj = document.getElementById('task-time');
   let reminderFrequencyObj = document.getElementById('task-remind-periodically');
-  let taskIsCompletedObj = document.getElementById('task_is_completed');
 
   const name = nameObj.value.trim();
   const mainTaskId = mainTaskIdObj.value;
   const byDate = byDateObj.value;
   const byTime = byTimeObj.value;
   const reminderFrequency = reminderFrequencyObj.value;
-  const taskIsCompleted = taskIsCompletedObj.checked;//(taskIsCompletedObj.value === "true") ? true : false;
 
-  
+  if (!name || (mainTaskId !== 'none' && tasks.some(task => task.mainTaskId === mainTaskId && task.name === name))) {
+    alert('Task name is required and must be unique under the selected main task.');
+    return;
+  }
 
   if (task !== null && task !== undefined) {
+
     tasks.forEach(item => {
       if (item.id === task.id) {
-        if (!name || (mainTaskId !== 'none' && tasks.some(_task => _task.mainTaskId === mainTaskId && _task.id !== task.id && _task.name === name))) {
-          alert('Task name is required and must be unique under the selected main task.');
-          return;
-        }
         item.name = name;
         item.mainTaskId = mainTaskId;
         item.byDate = byDate || mainTask.byDate;
         item.byTime = byTime;
         item.reminderFrequency = reminderFrequency;
-        item.taskIsCompleted = taskIsCompleted;
+        item.isCompleted = false;
       }
     })
   }
   else {
-    if (!name || (mainTaskId !== 'none' && tasks.some(_task => _task.mainTaskId === mainTaskId && _task.name === name))) {
-      alert('Task name is required and must be unique under the selected main task.');
-      return;
-    }
     const _task = {
       id: Date.now(),
       name,
@@ -231,7 +314,7 @@ function syncTaskData(task = null) {
       byTime: byTime || null,
       reminderFrequency: reminderFrequency || "none",
       createdDate: new Date().toISOString(),
-      taskIsCompleted: taskIsCompleted
+      isCompleted: false
     };
     task = _task;
     tasks.push(task);
@@ -244,6 +327,35 @@ function syncTaskData(task = null) {
 // Add Task
 function addTask() {
   syncTaskData();
+  /*
+    let nameObj = document.getElementById('task-name');
+    let mainTaskIdObj = document.getElementById('task-main-task');
+    let byDateObj = document.getElementById('task-date');
+  
+    const name = nameObj.value.trim();
+    const mainTaskId = mainTaskIdObj.value;
+    const byDate = byDateObj.value;
+  
+    if (!name || (mainTaskId !== 'none' && tasks.some(task => task.mainTaskId === mainTaskId && task.name === name))) {
+      alert('Task name is required and must be unique under the selected main task.');
+      return;
+    }
+  
+    const task = {
+      id: Date.now(),
+      name,
+      mainTaskId: mainTaskId === 'none' ? "Uncategorized" : mainTaskId,
+      byDate: byDate || null,
+      createdDate: new Date().toISOString(),
+      isCompleted: false
+    };
+    tasks.push(task);
+    saveData();
+    nameObj.value = "";
+    mainTaskIdObj.value = "none";
+    byDateObj.value = "";
+    closePopup(taskOverlay.id);
+    */
 }
 function updateTask() {
   let task = selectedTask;
@@ -258,6 +370,8 @@ function deleteTask() {
     tasks = tasks.filter(item => item.id !== task.id);
     saveData();
     closePopup(taskOverlay.id);
+    //let _task = tasks.find(item => item.id === task.id);
+    //tasks.remove(_task);
   }
 }
 
@@ -270,6 +384,10 @@ function editListObject(taskObject) {
 
       nameObj.value = taskObject.name;
       byDateObj.value = taskObject.byDate;
+
+      // showHideElements(mainTaskAddBtn, "hidden");
+      // showHideElements(mainTaskUpdateBtn, "visible");
+      // showHideElements(mainTaskDeleteBtn, "visible");
     addRemoveHideElements(mainTaskPopupButtonHolder, `<button class="popup_buttons default_main_task_buttons edit_main_task_buttons" onclick="updateMainTask()" id="main-task-update">Update</button>
             <button class="popup_buttons default_main_task_buttons edit_main_task_buttons" onclick="deleteMainTask()" id="main-task-delete">Delete</button>`);
 
@@ -282,15 +400,16 @@ function editListObject(taskObject) {
       let byDateObj = document.getElementById('task-date');
       let byTimeObj = document.getElementById('task-time');
       let reminderFrequencyObj = document.getElementById('task-remind-periodically');
-      let taskIsCompletedObj = document.getElementById('task_is_completed');
 
       nameObj.value = taskObject.name;
       mainTaskIdObj.value = taskObject.mainTaskId;// === "Uncategorized" ? "none" : taskObject.mainTaskId;
       byDateObj.value = taskObject.byDate;
       byTimeObj.value = taskObject.byTime;
       reminderFrequencyObj.value = taskObject.reminderFrequency;
-      taskIsCompletedObj.checked = taskObject.taskIsCompleted;
-      
+
+      // showHideElements(taskAddBtn, "hidden");
+      // showHideElements(taskUpdateBtn, "visible");
+      // showHideElements(taskDeleteBtn, "visible");
       addRemoveHideElements(taskPopupButtonHolder, `<button class="popup_buttons default_task_buttons edit_task_buttons" onclick="updateTask()" id="task-update">Update</button>
             <button class="popup_buttons default_task_buttons edit_task_buttons" onclick="deleteTask()" id="task-delete">Delete</button>`)
 
@@ -384,3 +503,4 @@ function initialize() {
   updateMainTaskDropdown();
 }
 initialize();
+
