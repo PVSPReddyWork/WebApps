@@ -126,7 +126,7 @@ main {
   background-color: #fff;
   overflow: hidden;
   border-radius: 10px;
-  width: 90%;
+  /* width: 90%; */
   max-width: 400px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   display: flex;
@@ -154,6 +154,17 @@ main {
   font-weight: bolder;
 }
 
+.popup_inputs{
+
+}
+
+.popup_buttons{}
+
+.popup-edit-button-holder{
+  display: flex;
+  flex-direction: row;
+}
+
 .close-btn {
   background-color: transparent;
   border: none;
@@ -166,8 +177,21 @@ main {
 
 .popup-data-holder{
   margin: 10px;
+  display: flex;
+  flex-direction: column;
 }
-
+.reminder_holder{
+  padding: 0px;
+  margin: 0px;
+}
+.is_task_completed_holder{
+  padding: 0px;
+  margin: 0px;
+}
+.no_margin_padding{
+  padding: 0px;
+  margin: 0px;
+}
 
 #task_div{
   position: relative;
