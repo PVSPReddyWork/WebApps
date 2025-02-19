@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Display App</title>
+    <!-- Chart.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chart.js Data Labels Plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: auto;
+        }
+
+        input,
+        select,
+        button {
+            margin: 5px;
+            padding: 8px;
+        }
+
+        canvas {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>Graph Display App</h2>
+        <label>X-Axis Items (comma-separated):</label>
+        <input type="text" id="xValues" placeholder="Item1, Item2, Item3">
+        <br>
+        <label>Y-Axis Min:</label>
+        <input type="number" id="yMin" placeholder="Min">
+        <label>Y-Axis Max:</label>
+        <input type="number" id="yMax" placeholder="Max">
+        <label>Interval:</label>
+        <input type="number" id="yInterval" placeholder="Interval">
+        <br>
+        <label>Values (comma-separated for each X-axis item):</label>
+        <input type="text" id="yValues" placeholder="10, 20, 30">
+        <br>
+        <label>Graph Type:</label>
+        <select id="graphType">
+            <option value="bar">Bar</option>
+            <option value="line">Line</option>
+            <option value="step">Step</option>
+            <option value="radar">Radar</option>
+        </select>
+        <br>
+        <button onclick="plotGraph()">Start</button>
+        <canvas id="myChart"></canvas>
+    </div>
+
+    <script>
+        function plotGraph() {
+            const xValues = document.getElementById('xValues').value.split(',').map(x => x.trim());
+            const yValues = document.getElementById('yValues').value.split(',').map(Number);
+            const yMin = Number(document.getElementById('yMin').value);
+            const yMax = Number(document.getElementById('yMax').value);
+            let graphType = document.getElementById('graphType').value;
+
+            if (xValues.length !== yValues.length || isNaN(yMin) || isNaN(yMax)) {
+                alert("Please enter valid values");
+                return;
+            }
+
+            const ctx = document.getElementById('myChart').getContext('2d');
+
+            if (window.myChart instanceof Chart) {
+                window.myChart.destroy();
+            }
+
+            // Register the Data Labels Plugin
+            Chart.register(ChartDataLabels);
+
+            const chartType = graphType === "step" ? "line" : graphType;
+
+            window.myChart = new Chart(ctx, {
+                type: chartType,
+                data: {
+                    labels: xValues,
+                    datasets: [{
+                        label: 'Values',
+                        data: yValues,
+                        borderColor: 'blue',
+                        backgroundColor: 'rgba(0, 0, 255, 0.5)',
+                        borderWidth: 2,
+                        stepped: graphType === "step",
+                        fill: chartType !== 'bar'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    animation: {
+                        duration: 1000,
+                        easing: 'easeInOutQuart'
+                    },
+                    scales: {
+                        y: {
+                            min: yMin,
+                            max: yMax,
+                            beginAtZero: false
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            enabled: true
+                        },
+                        datalabels: {  // Show values on top
+                            anchor: 'end',
+                            align: 'top',
+                            color: 'black',
+                            font: {
+                                weight: 'bold'
+                            },
+                            formatter: function (value) {
+                                return value; // Display value on graph
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels] // Register the plugin in the chart
+            });
+        }
+    </script>
+</body>
+
+</html>
