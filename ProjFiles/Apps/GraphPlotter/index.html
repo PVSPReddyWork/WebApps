@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graph Plotter</title>
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+    <!-- CSS File -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Graph Plotter</h2>
+        
+        <div class="input-group">
+            <label for="xValues">X-Axis Values (comma-separated):</label>
+            <input type="text" id="xValues" placeholder="E.g., Jan, Feb, Mar">
+        </div>
+
+        <div class="input-group">
+            <label for="yValues">Y-Axis Values (comma-separated):</label>
+            <input type="text" id="yValues" placeholder="E.g., 10, 20, 30">
+        </div>
+
+        <div class="input-group">
+            <label for="yMin">Y-Axis Minimum:</label>
+            <input type="number" id="yMin" placeholder="E.g., 0">
+        </div>
+
+        <div class="input-group">
+            <label for="yMax">Y-Axis Maximum:</label>
+            <input type="number" id="yMax" placeholder="E.g., 100">
+        </div>
+
+        <div class="input-group">
+            <label for="yInterval">Y-Axis Interval:</label>
+            <input type="number" id="yInterval" placeholder="E.g., 10">
+        </div>
+
+        <div class="input-group">
+            <label for="graphType">Select Graph Type:</label>
+            <select id="graphType">
+                <option value="bar">Bar</option>
+                <option value="line">Line</option>
+                <option value="step">Step</option>
+                <option value="radar">Radar</option>
+            </select>
+        </div>
+
+        <button id="startButton">Start</button>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="graphModal" class="modal">
+        <div class="modal-content">
+            <button id="closeButton">✖</button>
+            <canvas id="myChart"></canvas>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

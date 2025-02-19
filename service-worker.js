@@ -49,16 +49,16 @@ self.addEventListener('fetch', event => {
   );
 });
 */
-const CACHE_NAME = 'web-apps-v2'; // Update the version to force new caching
+const CACHE_NAME = 'web-apps-v1'; // Update the version to force new caching
 const ASSETS_TO_CACHE = [ // Cache-busting query string
   '/',                  // Root (index.html)
   '/index.html',        // Main HTML
   //'/style.css',         // CSS file
   //'/app.js',            // JavaScript file
   //'/icons/icon-192.png' // Example icon file
-  '/ProjFiles/Apps/TaskPlanner/index.html?v=2',
-  '/ProjFiles/Apps/TaskPlanner/script.js?v=2',
-  '/ProjFiles/Apps/TaskPlanner/styles.css?v=2'
+  '/ProjFiles/Apps/TaskPlanner/index.html?v=1',
+  '/ProjFiles/Apps/TaskPlanner/script.js?v=1',
+  '/ProjFiles/Apps/TaskPlanner/styles.css?v=1'
 ];
 
 self.addEventListener('install', event => {
