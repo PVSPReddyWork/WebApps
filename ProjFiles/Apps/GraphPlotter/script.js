@@ -1,3 +1,38 @@
+document.getElementById('jsonFile').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+
+    if (!file) return; // If no file is selected, do nothing
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const jsonData = JSON.parse(e.target.result);
+
+            // Check if JSON has required keys
+            if (!jsonData.xValues || !jsonData.yValues || isNaN(jsonData.yMin) || 
+                isNaN(jsonData.yMax) || isNaN(jsonData.yInterval) || !jsonData.graphType) {
+                alert("Invalid JSON structure. Please upload a valid file.");
+                return;
+            }
+
+            // Fill the input fields with JSON data
+            document.getElementById('xValues').value = jsonData.xValues.join(", ");
+            document.getElementById('yValues').value = jsonData.yValues.join(", ");
+            document.getElementById('yMin').value = jsonData.yMin;
+            document.getElementById('yMax').value = jsonData.yMax;
+            document.getElementById('yInterval').value = jsonData.yInterval;
+            document.getElementById('graphType').value = jsonData.graphType;
+
+            alert("Data loaded successfully!");
+        } catch (error) {
+            alert("Error reading JSON file. Please check the file format.");
+        }
+    };
+
+    reader.readAsText(file); // Read the file as text
+});
+
+
 document.getElementById('startButton').addEventListener('click', function () {
     document.getElementById('graphModal').style.display = 'flex';
     plotGraph();
