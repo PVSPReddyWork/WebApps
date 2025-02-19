@@ -49,7 +49,7 @@ self.addEventListener('fetch', event => {
   );
 });
 */
-const CACHE_NAME = 'web-apps-v1'; // Update the version to force new caching
+const CACHE_NAME = 'web-apps-v01'; // Update the version to force new caching
 const ASSETS_TO_CACHE = [ // Cache-busting query string
   '/',                  // Root (index.html)
   '/index.html',        // Main HTML

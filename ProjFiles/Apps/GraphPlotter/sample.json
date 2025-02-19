@@ -1,0 +1,9 @@
+{
+    "xValues": ["Jan", "Feb", "Mar"],
+    "yValues": [1, 20, 30],
+    "yMin": 0,
+    "yMax": 200,
+    "yInterval": 10,
+    "graphType": "bar"
+  }
+  
