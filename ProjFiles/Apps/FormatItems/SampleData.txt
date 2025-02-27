@@ -1,0 +1,9 @@
+apple,banana,
+plum,
+egg,
+meat,chicken,
+spinach,
+carrot,
+eraser,
+pomegranate,
+grapes, guava

@@ -1,0 +1,110 @@
+[
+    {
+      "category": "Fruits",
+      "Items": [
+        "Apple",
+        "Banana",
+        "Pomegranate",
+        "Grapes",
+        "Papaya",
+        "Water Melon",
+        "Sweet Oranges",
+        "Sweet Lime",
+        "Guava"
+      ]
+    },
+    {
+      "category": "Vegetables",
+      "Items": [
+        "Carrot",
+        "Onion",
+        "Tomato",
+        "Garlic",
+        "Ginger",
+        "Capsicum",
+        "Chillies",
+        "Potato",
+        "Sweet Potato",
+        "Drum Sticks",
+        "Okra",
+        "Beans",
+        "Elephant Ear Beans",
+        "Brinjal",
+        "Bitter Gourd",
+        "Bottle Gourd",
+        "Cabbage",
+        "Broccoli",
+        "Cauliflower"
+      ]
+    },
+    {
+      "category": "Leafy Vegetables",
+      "Items": [
+        "Spinach",
+        "Coriander",
+        "Curry Leaves",
+        "Palak",
+        "Mint Leaves"
+      ]
+    },
+    {
+      "category": "Meat",
+      "Items": [
+        "Chicken",
+        "Mutton",
+        "Fish",
+        "Crab",
+        "Prawns",
+        "Eggs"
+      ]
+    },
+    {
+      "category": "Groceries",
+      "Items": [
+        "Tea Powder",
+        "Masala",
+        "Jeera",
+        "Dhoop Sticks",
+        "Dust Bin Bags",
+        "Turmeric",
+        "Honey",
+        "Sugar",
+        "Jaggery",
+        "Cooking Oil",
+        "Pooja Oil"
+      ]
+    },
+    {
+      "category": "Dairy",
+      "Items": [
+        "Milk",
+        "Curd",
+        "Paneer",
+        "Bread"
+      ]
+    },
+    {
+      "category": "Stationary",
+      "Items": [
+        "Pen",
+        "Pencil",
+        "Eraser",
+        "Sharpner",
+        "Scale",
+        "Chart",
+        "Pad"
+      ]
+    },
+    {
+      "category": "Hardware",
+      "Items": [
+        "Screw Driver",
+        "Screws",
+        "Hammer",
+        "Drill Bit",
+        "Tester",
+        "Wire Cutter"
+      ]
+    }
+  ]
+  

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Item Categorizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <div class="container">
+        <h2>Item Categorizer</h2>
+
+        <div class="top-actions">
+            <label for="jsonUpload">Upload JSON File:</label>
+            <input type="file" id="jsonUpload" accept=".json">
+            <button id="addButton">Add</button>
+        </div>
+
+        <textarea id="inputText" placeholder="Enter items separated by comma or new line..."></textarea>
+
+        <button id="processButton">Process</button>
+
+        <h3>Grouped Categories:</h3>
+        <pre id="outputText"></pre>
+        <button id="copyButton">Copy Output</button>
+    </div>
+
+    <!-- Popup Modal -->
+    <div id="addPopup" class="modal">
+        <div class="modal-content">
+            <button id="closePopup">✖</button>
+            <h3>Add Items</h3>
+
+            <label for="categorySelect">Select Category:</label>
+            <select id="categorySelect">
+                <option value="">Select</option>
+            </select>
+
+            <div id="newCategorySection" style="display: none;">
+                <label for="newCategory">New Category Name:</label>
+                <input type="text" id="newCategory">
+            </div>
+
+            <label for="newItems">Enter Items (comma-separated):</label>
+            <textarea id="newItems"></textarea>
+
+            <button id="submitNewItem">Submit</button>
+            <button id="backupData">Backup</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
